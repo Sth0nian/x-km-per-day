@@ -1184,207 +1184,194 @@ class RunningCharts {
             return;
         }
 
-        // Define standard distances for PR tracking
-        const standardDistances = [
-            { distance: 5, label: '5K', range: [4.5, 5.5] },
-            { distance: 10, label: '10K', range: [9.5, 10.5] },
-            { distance: 15, label: '15K', range: [14.5, 15.5] },
-            { distance: 21.1, label: 'Half Marathon', range: [20.5, 21.6] }
+        // Focus on challenge distances: 3, 5, 7, 10, 14km
+        const challengeDistances = [
+            { distance: 3, label: '3km', range: [2.8, 3.2] },
+            { distance: 5, label: '5km', range: [4.8, 5.2] },
+            { distance: 7, label: '7km', range: [6.8, 7.2] },
+            { distance: 10, label: '10km', range: [9.8, 10.2] },
+            { distance: 14, label: '14km', range: [13.8, 14.2] }
         ];
 
-        // Find PRs for each distance
-        const personalRecords = standardDistances.map(std => {
+        // Find fastest time for each challenge distance
+        const fastestTimes = challengeDistances.map(dist => {
             const relevantActivities = activities.filter(act => {
-                const dist = parseFloat(act.distanceKm);
-                return dist >= std.range[0] && dist <= std.range[1] && act.averagePaceMinKm !== '0:00';
+                const actDist = parseFloat(act.distanceKm);
+                return actDist >= dist.range[0] && actDist <= dist.range[1] && act.averagePaceMinKm !== '0:00';
             });
 
             if (relevantActivities.length === 0) return null;
 
-            // Sort by pace (fastest first)
-            const sortedByPace = relevantActivities.sort((a, b) => 
-                this.paceToSeconds(a.averagePaceMinKm) - this.paceToSeconds(b.averagePaceMinKm)
-            );
-
-            // Find progression of PRs over time
-            const prHistory = [];
-            let currentBest = Infinity;
-
-            sortedByPace.forEach(activity => {
-                const pace = this.paceToSeconds(activity.averagePaceMinKm);
-                if (pace < currentBest) {
-                    currentBest = pace;
-                    prHistory.push({
-                        date: new Date(activity.date + 'T00:00:00'),
-                        pace: pace,
-                        distance: parseFloat(activity.distanceKm),
-                        totalTime: activity.movingTime,
-                        activity: activity
-                    });
-                }
+            // Find fastest (best pace)
+            const fastest = relevantActivities.reduce((best, current) => {
+                const currentPace = this.paceToSeconds(current.averagePaceMinKm);
+                const bestPace = this.paceToSeconds(best.averagePaceMinKm);
+                return currentPace < bestPace ? current : best;
             });
 
             return {
-                distance: std.distance,
-                label: std.label,
-                currentPR: prHistory[prHistory.length - 1],
-                history: prHistory,
-                totalAttempts: relevantActivities.length
+                distance: dist.distance,
+                label: dist.label,
+                pace: this.paceToSeconds(fastest.averagePaceMinKm),
+                totalTime: fastest.movingTime,
+                date: fastest.date,
+                attempts: relevantActivities.length,
+                activity: fastest
             };
         }).filter(pr => pr !== null);
 
-        if (personalRecords.length === 0) {
+        if (fastestTimes.length === 0) {
             d3.select(selector).append('div')
                 .style('padding', '20px')
                 .style('text-align', 'center')
                 .style('color', '#cccccc')
-                .text('No standard distance PRs found');
+                .text('No challenge distance records found');
             return;
         }
 
-        const margin = { top: 40, right: 30, bottom: 60, left: 120 };
         const container = d3.select(selector);
         const containerWidth = container.node().getBoundingClientRect().width;
+        const margin = { top: 20, right: 20, bottom: 40, left: 20 };
         const width = containerWidth - margin.left - margin.right;
-        const height = Math.max(300, personalRecords.length * 80) - margin.top - margin.bottom;
+        const height = 300 - margin.top - margin.bottom;
 
         const svg = container
             .append('svg')
             .attr('width', containerWidth)
-            .attr('height', height + margin.top + margin.bottom);
+            .attr('height', 300);
 
         const g = svg.append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // Create scales
-        const yScale = d3.scaleBand()
-            .domain(personalRecords.map(d => d.label))
-            .range([0, height])
-            .padding(0.3);
-
-        const allDates = personalRecords.flatMap(pr => pr.history.map(h => h.date));
-        const xScale = d3.scaleTime()
-            .domain(d3.extent(allDates))
-            .range([0, width]);
+        // Calculate card layout
+        const cols = Math.min(5, fastestTimes.length);
+        const rows = Math.ceil(fastestTimes.length / cols);
+        const cardWidth = (width - (cols - 1) * 15) / cols;
+        const cardHeight = (height - (rows - 1) * 15 - 40) / rows; // 40px for title
 
         // Add title
         g.append('text')
             .attr('x', width / 2)
-            .attr('y', -20)
+            .attr('y', 15)
             .attr('text-anchor', 'middle')
             .style('font-size', '16px')
             .style('fill', '#fc4c02')
             .style('font-weight', 'bold')
-            .text('Personal Records Timeline');
+            .text('Challenge Distance PRs');
 
-        // Create timeline for each distance
-        personalRecords.forEach((pr, index) => {
-            const yPos = yScale(pr.label) + yScale.bandwidth() / 2;
+        // Create PR cards
+        const prCards = g.selectAll('.pr-card')
+            .data(fastestTimes)
+            .enter().append('g')
+            .attr('class', 'pr-card')
+            .attr('transform', (d, i) => {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const x = col * (cardWidth + 15);
+                const y = 40 + row * (cardHeight + 15); // 40px offset for title
+                return `translate(${x},${y})`;
+            });
 
-            // Background line
-            g.append('line')
-                .attr('x1', 0)
-                .attr('x2', width)
-                .attr('y1', yPos)
-                .attr('y2', yPos)
-                .attr('stroke', '#444444')
-                .attr('stroke-width', 2);
+        // Card backgrounds with gradient based on pace
+        const bestPace = d3.min(fastestTimes, d => d.pace);
+        const worstPace = d3.max(fastestTimes, d => d.pace);
+        
+        prCards.append('rect')
+            .attr('width', cardWidth)
+            .attr('height', cardHeight)
+            .attr('fill', d => {
+                // Better pace = more intense color
+                const intensity = 1 - ((d.pace - bestPace) / (worstPace - bestPace));
+                return d3.interpolateOranges(0.3 + intensity * 0.7);
+            })
+            .attr('stroke', '#555555')
+            .attr('stroke-width', 1)
+            .attr('rx', 8)
+            .attr('ry', 8)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
+                d3.select(this)
+                    .attr('stroke', '#fc4c02')
+                    .attr('stroke-width', 2);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this)
+                    .attr('stroke', '#555555')
+                    .attr('stroke-width', 1);
+            });
 
-            // Distance label
-            g.append('text')
-                .attr('x', -10)
-                .attr('y', yPos)
-                .attr('text-anchor', 'end')
-                .attr('dy', '0.35em')
-                .style('font-size', '14px')
-                .style('font-weight', 'bold')
-                .style('fill', '#ffffff')
-                .text(pr.label);
+        // Distance labels
+        prCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', 20)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '16px')
+            .style('font-weight', 'bold')
+            .style('fill', '#000000')
+            .text(d => d.label);
 
-            // PR progression line
-            if (pr.history.length > 1) {
-                const line = d3.line()
-                    .x(d => xScale(d.date))
-                    .y(d => yPos)
-                    .curve(d3.curveStepAfter);
+        // Best pace (large display)
+        prCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight / 2 + 5)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '18px')
+            .style('font-weight', 'bold')
+            .style('fill', '#000000')
+            .text(d => this.secondsToPace(d.pace));
 
-                g.append('path')
-                    .datum(pr.history)
-                    .attr('d', line)
-                    .attr('stroke', this.colors.success)
-                    .attr('stroke-width', 3)
-                    .attr('fill', 'none');
-            }
+        // "min/km" label
+        prCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight / 2 + 20)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '10px')
+            .style('fill', '#333333')
+            .text('min/km');
 
-            // PR points
-            g.selectAll(`.pr-point-${index}`)
-                .data(pr.history)
-                .enter().append('circle')
-                .attr('class', `pr-point-${index}`)
-                .attr('cx', d => xScale(d.date))
-                .attr('cy', yPos)
-                .attr('r', 6)
-                .attr('fill', this.colors.success)
-                .attr('stroke', '#ffffff')
-                .attr('stroke-width', 2)
-                .style('cursor', 'pointer')
-                .on('mouseover', (event, d) => {
-                    this.tooltip.transition().duration(200).style('opacity', .9);
-                    this.tooltip.html(`
-                        <strong>${pr.label} PR</strong><br/>
-                        Date: ${d.date.toLocaleDateString()}<br/>
-                        Time: ${this.formatTimeHMS(d.totalTime)}<br/>
-                        Pace: ${this.secondsToPace(d.pace)}/km<br/>
-                        Distance: ${d.distance} km
-                    `)
-                        .style('left', (event.pageX + 10) + 'px')
-                        .style('top', (event.pageY - 28) + 'px');
-                })
-                .on('mouseout', () => {
-                    this.tooltip.transition().duration(500).style('opacity', 0);
-                });
+        // Total time
+        prCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight - 25)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', '#000000')
+            .text(d => this.formatTimeHMS(d.totalTime));
 
-            // Current PR time display
-            g.append('text')
-                .attr('x', width + 10)
-                .attr('y', yPos - 8)
-                .style('font-size', '12px')
-                .style('font-weight', 'bold')
-                .style('fill', this.colors.success)
-                .text(this.formatTimeHMS(pr.currentPR.totalTime));
+        // Date achieved
+        prCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight - 10)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '9px')
+            .style('fill', '#666666')
+            .text(d => new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
 
-            // Current PR pace
-            g.append('text')
-                .attr('x', width + 10)
-                .attr('y', yPos + 8)
-                .style('font-size', '10px')
-                .style('fill', '#cccccc')
-                .text(`${this.secondsToPace(pr.currentPR.pace)}/km`);
+        // Add tooltips
+        prCards.on('mouseover', (event, d) => {
+            this.tooltip.transition().duration(200).style('opacity', .9);
+            this.tooltip.html(`
+                <strong>${d.label} Personal Best</strong><br/>
+                Pace: ${this.secondsToPace(d.pace)}/km<br/>
+                Total Time: ${this.formatTimeHMS(d.totalTime)}<br/>
+                Date: ${new Date(d.date + 'T00:00:00').toLocaleDateString()}<br/>
+                Attempts: ${d.attempts} runs
+            `)
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 28) + 'px');
+        })
+        .on('mouseout', () => {
+            this.tooltip.transition().duration(500).style('opacity', 0);
         });
 
-        // Add time axis
-        g.append('g')
-            .attr('class', 'axis')
-            .attr('transform', `translate(0,${height})`)
-            .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b %Y')))
-            .selectAll('text')
-            .style('font-size', '10px')
-            .style('fill', '#cccccc');
-
-        // Add legend
-        const legend = g.append('g')
-            .attr('transform', `translate(10, 10)`);
-
-        legend.append('circle')
-            .attr('r', 6)
-            .attr('fill', this.colors.success);
-
-        legend.append('text')
-            .attr('x', 15)
-            .attr('y', 5)
+        // Add subtitle
+        g.append('text')
+            .attr('x', width / 2)
+            .attr('y', 32)
+            .attr('text-anchor', 'middle')
             .style('font-size', '12px')
             .style('fill', '#cccccc')
-            .text('Personal Record');
+            .text('Fastest pace achieved at each challenge distance');
     }
 
     createTrainingLoadChart(activities, selector) {
@@ -1557,14 +1544,6 @@ class RunningCharts {
                 .style('fill', '#cccccc')
                 .text(item.label);
         });
-
-        // Recovery status legend
-        legend.append('text')
-            .attr('x', 0)
-            .attr('y', 70)
-            .style('font-size', '11px')
-            .style('fill', '#cccccc')
-            .text('✅ Good  ⚡ Moderate  ⚠️ Risk');
     }
 
     calculateWeeklyTrainingLoad(activities) {

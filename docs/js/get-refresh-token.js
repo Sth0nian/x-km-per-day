@@ -59,7 +59,7 @@ class StravaOAuthSetup {
 
     generateAuthUrl() {
         const scopes = 'read,activity:read_all';
-        const redirectUri = 'https://sth0nian.github.io/x-km-per-day'; // Updated for your repo
+        const redirectUri = 'http://localhost'; // Updated for your repo
         const state = 'github_action_setup';
         
         const params = new URLSearchParams({

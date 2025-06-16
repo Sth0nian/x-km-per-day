@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Running Dashboard</title>
+    <title>X km / day, +1km per month Challenge</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Track your daily running challenge progress from 3km to 14km per day">
+    <meta name="theme-color" content="#fc4c02">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Run Challenge">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -70,6 +88,11 @@
                 <h3>Training Load & Recovery</h3>
                 <div id="trainingLoadChart" class="chart"></div>
             </div>
+
+            <div class="chart-container">
+                <h3>Challenge Progress Radar</h3>
+                <div id="radarChart" class="chart"></div>
+            </div>
         </div>
 
         <div class="activities-section">
@@ -82,5 +105,110 @@
 
     <script src="js/charts.js"></script>
     <script src="js/dashboard.js"></script>
+    
+    <!-- PWA Install Prompt -->
+    <div id="installPrompt" class="install-prompt" style="display: none;">
+        <div class="install-content">
+            <div class="install-icon">📱</div>
+            <div class="install-text">
+                <h3>Install Running Dashboard</h3>
+                <p>Add to your home screen for quick access to your running progress!</p>
+            </div>
+            <div class="install-buttons">
+                <button id="installBtn" class="install-btn primary">Install</button>
+                <button id="dismissBtn" class="install-btn secondary">Not Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Scripts -->
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const dismissBtn = document.getElementById('dismissBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show our custom install prompt
+            showInstallPrompt();
+        });
+
+        function showInstallPrompt() {
+            // Don't show if already dismissed in this session
+            if (sessionStorage.getItem('installPromptDismissed')) {
+                return;
+            }
+            
+            // Show after a delay to not interrupt initial loading
+            setTimeout(() => {
+                installPrompt.style.display = 'block';
+                installPrompt.style.animation = 'slideUp 0.3s ease-out';
+            }, 3000);
+        }
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                return;
+            }
+            
+            // Show the install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            
+            // Clear the deferredPrompt so it can only be used once
+            deferredPrompt = null;
+            hideInstallPrompt();
+        });
+
+        dismissBtn.addEventListener('click', () => {
+            sessionStorage.setItem('installPromptDismissed', 'true');
+            hideInstallPrompt();
+        });
+
+        function hideInstallPrompt() {
+            installPrompt.style.animation = 'slideDown 0.3s ease-out';
+            setTimeout(() => {
+                installPrompt.style.display = 'none';
+            }, 300);
+        }
+
+        // Handle successful installation
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            hideInstallPrompt();
+            
+            // Optional: Show success message
+            if ('serviceWorker' in navigator && 'Notification' in window) {
+                Notification.requestPermission();
+            }
+        });
+
+        // Check if app is running in standalone mode
+        if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('Running in standalone mode');
+            document.body.classList.add('standalone');
+        }
+    </script>
 </body>
 </html>

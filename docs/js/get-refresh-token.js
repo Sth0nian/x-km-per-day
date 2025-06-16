@@ -59,7 +59,7 @@ class StravaOAuthSetup {
 
     generateAuthUrl() {
         const scopes = 'read,activity:read_all';
-        const redirectUri = 'https://your-username.github.io/strava-running-dashboard'; // Update this
+        const redirectUri = 'https://Sth0nian.github.io/x-km-per-day'; // Update this
         const state = 'github_action_setup';
         
         const params = new URLSearchParams({

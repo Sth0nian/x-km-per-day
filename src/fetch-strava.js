@@ -13,6 +13,15 @@ class StravaDataFetcher {
     async refreshAccessToken() {
         console.log('Refreshing Strava access token...');
         
+        // Debug: Check if credentials are available (without logging the actual values)
+        console.log('Client ID available:', !!this.clientId);
+        console.log('Client Secret available:', !!this.clientSecret);
+        console.log('Refresh Token available:', !!this.refreshToken);
+        
+        if (!this.clientId || !this.clientSecret || !this.refreshToken) {
+            throw new Error('Missing Strava credentials. Please check GitHub Secrets.');
+        }
+        
         const response = await fetch('https://www.strava.com/oauth/token', {
             method: 'POST',
             headers: {
@@ -26,13 +35,18 @@ class StravaDataFetcher {
             })
         });
 
+        console.log('Token refresh response status:', response.status);
+        
         if (!response.ok) {
-            throw new Error(`Failed to refresh token: ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('Token refresh failed:', errorText);
+            throw new Error(`Failed to refresh token: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
         const data = await response.json();
         this.accessToken = data.access_token;
         console.log('Access token refreshed successfully');
+        console.log('New token expires at:', new Date(data.expires_at * 1000));
         
         return data;
     }

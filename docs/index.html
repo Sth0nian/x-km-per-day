@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏃‍♂️ Running Dashboard</h1>
+            <div class="last-updated" id="lastUpdated">Loading...</div>
+        </header>
+
+        <div class="summary-cards" id="summaryCards">
+            <!-- Summary cards will be populated by JavaScript -->
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3>Weekly Distance</h3>
+                <div id="weeklyChart" class="chart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Pace Trends</h3>
+                <div id="paceChart" class="chart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Monthly Activity</h3>
+                <div id="calendarChart" class="chart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Distance Distribution</h3>
+                <div id="distanceChart" class="chart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Elevation vs Distance</h3>
+                <div id="elevationChart" class="chart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Heart Rate Analysis</h3>
+                <div id="heartRateChart" class="chart"></div>
+            </div>
+        </div>
+
+        <div class="activities-section">
+            <h3>Recent Activities</h3>
+            <div id="activitiesTable" class="activities-table">
+                <!-- Activities table will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/charts.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

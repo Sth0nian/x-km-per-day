@@ -258,13 +258,14 @@ class StravaDataFetcher {
     generateSummary(activities) {
         if (activities.length === 0) return {};
 
-        const totalDistance = activities.reduce((sum, act) => sum + parseFloat(act.distanceMiles), 0);
+        const totalDistanceKm = activities.reduce((sum, act) => sum + parseFloat(act.distanceKm), 0);
         const totalTime = activities.reduce((sum, act) => sum + act.movingTime, 0);
         const totalElevation = activities.reduce((sum, act) => sum + (act.totalElevationGain || 0), 0);
         
-        const avgDistance = totalDistance / activities.length;
-        const avgPace = this.convertSpeedToPace(
-            activities.reduce((sum, act) => sum + act.averageSpeed, 0) / activities.length
+        const avgDistanceKm = totalDistanceKm / activities.length;
+        const avgPaceKm = this.convertSpeedToPace(
+            activities.reduce((sum, act) => sum + act.averageSpeed, 0) / activities.length,
+            'km'
         );
 
         // Get date range
@@ -275,19 +276,19 @@ class StravaDataFetcher {
         };
 
         return {
-            totalDistance: totalDistance.toFixed(2),
+            totalDistance: totalDistanceKm.toFixed(2),
             totalTimeHours: (totalTime / 3600).toFixed(1),
             totalElevationGain: totalElevation.toFixed(0),
-            averageDistance: avgDistance.toFixed(2),
-            averagePace: avgPace,
+            averageDistance: avgDistanceKm.toFixed(2),
+            averagePace: avgPaceKm,
             dateRange,
             activitiesPerWeek: (activities.length / this.getWeeksBetweenDates(dates[0], dates[dates.length - 1])).toFixed(1),
             yearToDateStats: {
                 totalDays: Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24)),
                 activeDays: new Set(activities.map(act => act.date.split('T')[0])).size,
-                averageDistancePerRun: avgDistance.toFixed(2),
+                averageDistancePerRun: avgDistanceKm.toFixed(2),
                 totalRuns: activities.length,
-                longestRun: activities.length > 0 ? Math.max(...activities.map(act => parseFloat(act.distanceMiles))).toFixed(2) : '0'
+                longestRun: activities.length > 0 ? Math.max(...activities.map(act => parseFloat(act.distanceKm))).toFixed(2) : '0'
             }
         };
     }

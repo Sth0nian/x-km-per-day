@@ -2,12 +2,16 @@ class RunningCharts {
     constructor() {
         this.tooltip = this.createTooltip();
         this.colors = {
-            primary: '#667eea',
-            secondary: '#764ba2',
-            accent: '#f093fb',
-            success: '#4facfe',
-            warning: '#f6d365',
-            danger: '#fa709a'
+            primary: '#fc4c02', // Strava orange
+            secondary: '#ff6b35', // Lighter orange
+            accent: '#ff9500', // Yellow-orange
+            success: '#00d4aa', // Strava teal
+            warning: '#ffcc02', // Yellow
+            danger: '#e34402', // Dark orange/red
+            purple: '#8b5cf6', // Purple
+            blue: '#3b82f6', // Blue
+            green: '#10b981', // Green
+            pink: '#ec4899' // Pink
         };
     }
 
@@ -72,7 +76,7 @@ class RunningCharts {
             .attr('fill', this.colors.primary)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
-                this.tooltip.html(`Week: ${d.week}<br/>Distance: ${d.distance.toFixed(1)} mi<br/>Runs: ${d.count}`)
+                this.tooltip.html(`Week: ${d.week}<br/>Distance: ${d.distance.toFixed(1)} km<br/>Runs: ${d.count}<br/>Avg Pace: ${this.secondsToPace(d.avgPace)}`)
                     .style('left', (event.pageX + 10) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -88,18 +92,19 @@ class RunningCharts {
             .attr('dy', '1em')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text('Distance (miles)');
+            .style('fill', '#cccccc')
+            .text('Distance (kilometers)');
     }
 
     createPaceTrendChart(activities, selector) {
         d3.select(selector).selectAll('*').remove();
 
         const data = activities
-            .filter(d => d.averagePaceMinMile !== '0:00')
+            .filter(d => d.averagePaceMinKm !== '0:00')
             .map(d => ({
-                date: new Date(d.date),
-                pace: this.paceToSeconds(d.averagePaceMinMile),
-                distance: parseFloat(d.distanceMiles)
+                date: new Date(d.date + 'T00:00:00'),
+                pace: this.paceToSeconds(d.averagePaceMinKm),
+                distance: parseFloat(d.distanceKm)
             }))
             .sort((a, b) => a.date - b.date);
 
@@ -168,7 +173,7 @@ class RunningCharts {
             .attr('fill', this.colors.primary)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
-                this.tooltip.html(`Date: ${d.date.toLocaleDateString()}<br/>Pace: ${this.secondsToPace(d.pace)}<br/>Distance: ${d.distance} mi`)
+                this.tooltip.html(`Date: ${d.date.toLocaleDateString()}<br/>Pace: ${this.secondsToPace(d.pace)}<br/>Distance: ${d.distance} km`)
                     .style('left', (event.pageX + 10) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -184,7 +189,8 @@ class RunningCharts {
             .attr('dy', '1em')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text('Pace (min/mile)');
+            .style('fill', '#cccccc')
+            .text('Pace (min/km)');
     }
 
     createCalendarChart(activities, selector) {
@@ -195,9 +201,10 @@ class RunningCharts {
             activities,
             v => ({
                 count: v.length,
-                distance: d3.sum(v, d => parseFloat(d.distanceMiles))
+                distance: d3.sum(v, d => parseFloat(d.distanceKm)),
+                avgPace: d3.mean(v, d => this.paceToSeconds(d.averagePaceMinKm))
             }),
-            d => d3.timeDay(new Date(d.date))
+            d => d3.timeDay(new Date(d.date + 'T00:00:00'))
         );
 
         const container = d3.select(selector);
@@ -235,7 +242,7 @@ class RunningCharts {
                 const data = dailyData.get(d);
                 if (data) {
                     this.tooltip.transition().duration(200).style('opacity', .9);
-                    this.tooltip.html(`${d.toLocaleDateString()}<br/>Distance: ${data.distance.toFixed(1)} mi<br/>Runs: ${data.count}`)
+                    this.tooltip.html(`${d.toLocaleDateString()}<br/>Distance: ${data.distance.toFixed(1)} km<br/>Runs: ${data.count}<br/>Avg Pace: ${this.secondsToPace(data.avgPace)}`)
                         .style('left', (event.pageX + 10) + 'px')
                         .style('top', (event.pageY - 28) + 'px');
                 }
@@ -261,14 +268,24 @@ class RunningCharts {
         d3.select(selector).selectAll('*').remove();
 
         // Create distance bins
-        const distances = activities.map(d => parseFloat(d.distanceMiles));
-        const bins = [0, 3, 5, 7, 10, 15, 20, Infinity];
-        const binLabels = ['0-3', '3-5', '5-7', '7-10', '10-15', '15-20', '20+'];
+        const distances = activities.map(d => parseFloat(d.distanceKm));
+        const bins = [0, 5, 8, 11, 16, 24, 32, Infinity];
+        const binLabels = ['0-5', '5-8', '8-11', '11-16', '16-24', '24-32', '32+'];
         
-        const binData = bins.slice(0, -1).map((bin, i) => ({
-            label: binLabels[i],
-            count: distances.filter(d => d >= bin && d < bins[i + 1]).length
-        }));
+        const binData = bins.slice(0, -1).map((bin, i) => {
+            const activitiesInBin = activities.filter(act => {
+                const dist = parseFloat(act.distanceKm);
+                return dist >= bin && dist < bins[i + 1];
+            });
+            const avgPace = activitiesInBin.length > 0 ? 
+                d3.mean(activitiesInBin, d => this.paceToSeconds(d.averagePaceMinKm)) : 0;
+            
+            return {
+                label: binLabels[i],
+                count: activitiesInBin.length,
+                avgPace: avgPace
+            };
+        });
 
         const margin = { top: 20, right: 30, bottom: 40, left: 50 };
         const container = d3.select(selector);
@@ -314,7 +331,16 @@ class RunningCharts {
             .attr('width', xScale.bandwidth())
             .attr('y', d => yScale(d.count))
             .attr('height', d => height - yScale(d.count))
-            .attr('fill', this.colors.secondary);
+            .attr('fill', this.colors.secondary)
+            .on('mouseover', (event, d) => {
+                this.tooltip.transition().duration(200).style('opacity', .9);
+                this.tooltip.html(`Distance: ${d.label} km<br/>Runs: ${d.count}<br/>Avg Pace: ${this.secondsToPace(d.avgPace)}`)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', () => {
+                this.tooltip.transition().duration(500).style('opacity', 0);
+            });
 
         // Labels
         g.append('text')
@@ -322,7 +348,8 @@ class RunningCharts {
             .attr('y', height + 35)
             .attr('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text('Distance Range (miles)');
+            .style('fill', '#cccccc')
+            .text('Distance Range (kilometers)');
 
         g.append('text')
             .attr('transform', 'rotate(-90)')
@@ -331,6 +358,7 @@ class RunningCharts {
             .attr('dy', '1em')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
+            .style('fill', '#cccccc')
             .text('Number of Runs');
     }
 
@@ -340,8 +368,9 @@ class RunningCharts {
         const data = activities
             .filter(d => d.totalElevationGain > 0)
             .map(d => ({
-                distance: parseFloat(d.distanceMiles),
-                elevation: d.totalElevationGain * 3.28084 // Convert to feet
+                distance: parseFloat(d.distanceKm),
+                elevation: d.totalElevationGain, // Keep in meters
+                pace: this.paceToSeconds(d.averagePaceMinKm)
             }));
 
         if (data.length === 0) {
@@ -396,7 +425,7 @@ class RunningCharts {
             .attr('opacity', 0.7)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
-                this.tooltip.html(`Distance: ${d.distance} mi<br/>Elevation: ${Math.round(d.elevation)} ft`)
+                this.tooltip.html(`Distance: ${d.distance} km<br/>Elevation: ${Math.round(d.elevation)} m<br/>Pace: ${this.secondsToPace(d.pace)}`)
                     .style('left', (event.pageX + 10) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -410,7 +439,8 @@ class RunningCharts {
             .attr('y', height + 35)
             .attr('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text('Distance (miles)');
+            .style('fill', '#cccccc')
+            .text('Distance (kilometers)');
 
         g.append('text')
             .attr('transform', 'rotate(-90)')
@@ -419,7 +449,8 @@ class RunningCharts {
             .attr('dy', '1em')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text('Elevation Gain (feet)');
+            .style('fill', '#cccccc')
+            .text('Elevation Gain (meters)');
     }
 
     createHeartRateChart(activities, selector) {
@@ -428,9 +459,10 @@ class RunningCharts {
         const data = activities
             .filter(d => d.averageHeartrate)
             .map(d => ({
-                date: new Date(d.date),
+                date: new Date(d.date + 'T00:00:00'),
                 heartRate: d.averageHeartrate,
-                distance: parseFloat(d.distanceMiles)
+                distance: parseFloat(d.distanceKm),
+                pace: this.paceToSeconds(d.averagePaceMinKm)
             }))
             .sort((a, b) => a.date - b.date);
 
@@ -499,7 +531,7 @@ class RunningCharts {
             .attr('fill', this.colors.danger)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
-                this.tooltip.html(`Date: ${d.date.toLocaleDateString()}<br/>Heart Rate: ${d.heartRate} bpm<br/>Distance: ${d.distance} mi`)
+                this.tooltip.html(`Date: ${d.date.toLocaleDateString()}<br/>Heart Rate: ${d.heartRate} bpm<br/>Distance: ${d.distance} km<br/>Pace: ${this.secondsToPace(d.pace)}`)
                     .style('left', (event.pageX + 10) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -515,6 +547,7 @@ class RunningCharts {
             .attr('dy', '1em')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
+            .style('fill', '#cccccc')
             .text('Average Heart Rate (bpm)');
     }
 
@@ -523,16 +556,18 @@ class RunningCharts {
         const weekMap = d3.rollup(
             activities,
             v => ({
-                distance: d3.sum(v, d => parseFloat(d.distanceMiles)),
-                count: v.length
+                distance: d3.sum(v, d => parseFloat(d.distanceKm)),
+                count: v.length,
+                avgPace: d3.mean(v, d => this.paceToSeconds(d.averagePaceMinKm))
             }),
-            d => d3.timeWeek(new Date(d.date))
+            d => d3.timeWeek(new Date(d.date + 'T00:00:00'))
         );
 
         return Array.from(weekMap, ([week, data]) => ({
             week: d3.timeFormat('%m/%d')(week),
             distance: data.distance,
-            count: data.count
+            count: data.count,
+            avgPace: data.avgPace
         })).sort((a, b) => new Date(a.week) - new Date(b.week));
     }
 

@@ -47,11 +47,11 @@ class RunningDashboard {
         const yearToDate = this.data.yearToDate || new Date().getFullYear();
 
         const cards = [
-            { value: summary.totalDistance + ' mi', label: `Total Distance (${yearToDate})` },
+            { value: summary.totalDistance + ' km', label: `Total Distance (${yearToDate})` },
             { value: this.data.totalActivities, label: 'Total Runs YTD' },
-            { value: summary.averagePace || 'N/A', label: 'Average Pace' },
+            { value: summary.averagePace || 'N/A', label: 'Average Pace (min/km)' },
             { value: summary.totalTimeHours + ' hrs', label: 'Total Time' },
-            { value: summary.totalElevationGain + ' ft', label: 'Total Elevation' },
+            { value: summary.totalElevationGain + ' m', label: 'Total Elevation' },
             { value: summary.yearToDateStats?.activeDays || summary.activitiesPerWeek || '0', label: this.data.dataRange ? 'Active Days' : 'Runs per Week' }
         ];
 
@@ -115,10 +115,10 @@ class RunningDashboard {
                     ${recentActivities.map(activity => `
                         <tr>
                             <td>${this.formatDate(activity.date)}</td>
-                            <td>${activity.distanceMiles} mi</td>
-                            <td>${activity.averagePaceMinMile}</td>
+                            <td>${activity.distanceKm} km</td>
+                            <td>${activity.averagePaceMinKm}</td>
                             <td>${this.formatTime(activity.movingTime)}</td>
-                            <td>${Math.round(activity.totalElevationGain * 3.28084)} ft</td>
+                            <td>${Math.round(activity.totalElevationGain)} m</td>
                             <td>
                                 <div class="activity-location">${activity.city || ''} ${activity.state || ''}</div>
                             </td>
@@ -188,8 +188,8 @@ class RunningDashboard {
                 {
                     id: 1,
                     date: "2025-06-15",
-                    distanceMiles: "3.1",
-                    averagePaceMinMile: "8:30",
+                    distanceKm: "5.0",
+                    averagePaceMinKm: "5:16",
                     movingTime: 1584,
                     totalElevationGain: 50,
                     city: "San Francisco",
@@ -199,8 +199,8 @@ class RunningDashboard {
                 {
                     id: 2,
                     date: "2025-06-13",
-                    distanceMiles: "5.0",
-                    averagePaceMinMile: "9:15",
+                    distanceKm: "8.0",
+                    averagePaceMinKm: "5:45",
                     movingTime: 2775,
                     totalElevationGain: 120,
                     city: "San Francisco",
@@ -210,8 +210,8 @@ class RunningDashboard {
                 {
                     id: 3,
                     date: "2025-06-11",
-                    distanceMiles: "10.0",
-                    averagePaceMinMile: "9:45",
+                    distanceKm: "16.1",
+                    averagePaceMinKm: "6:04",
                     movingTime: 5850,
                     totalElevationGain: 300,
                     city: "San Francisco",
@@ -221,8 +221,8 @@ class RunningDashboard {
                 {
                     id: 4,
                     date: "2025-06-09",
-                    distanceMiles: "6.2",
-                    averagePaceMinMile: "10:30",
+                    distanceKm: "10.0",
+                    averagePaceMinKm: "6:32",
                     movingTime: 3906,
                     totalElevationGain: 500,
                     city: "Mill Valley",
@@ -232,8 +232,8 @@ class RunningDashboard {
                 {
                     id: 5,
                     date: "2025-06-07",
-                    distanceMiles: "2.5",
-                    averagePaceMinMile: "10:00",
+                    distanceKm: "4.0",
+                    averagePaceMinKm: "6:12",
                     movingTime: 1500,
                     totalElevationGain: 25,
                     city: "San Francisco",
@@ -242,11 +242,11 @@ class RunningDashboard {
                 }
             ],
             summary: {
-                totalDistance: "26.8",
+                totalDistance: "43.1",
                 totalTimeHours: "4.2",
                 totalElevationGain: "995",
-                averageDistance: "5.36",
-                averagePace: "9:24",
+                averageDistance: "8.62",
+                averagePace: "5:51",
                 activitiesPerWeek: "3.5"
             }
         };

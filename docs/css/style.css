@@ -7,9 +7,9 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1a1a1a;
     min-height: 100vh;
-    color: #333;
+    color: #ffffff;
 }
 
 .container {
@@ -22,18 +22,20 @@ body {
 header {
     text-align: center;
     margin-bottom: 2rem;
-    color: white;
+    color: #ffffff;
 }
 
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    color: #fc4c02; /* Strava orange */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .last-updated {
     font-size: 0.9rem;
-    opacity: 0.9;
+    opacity: 0.8;
+    color: #cccccc;
 }
 
 /* Summary Cards */
@@ -45,28 +47,29 @@ header h1 {
 }
 
 .summary-card {
-    background: white;
+    background: #2d2d2d;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 1px solid #404040;
 }
 
 .summary-card:hover {
     transform: translateY(-2px);
+    background: #363636;
 }
 
 .summary-card .value {
     font-size: 2rem;
     font-weight: bold;
-    color: #667eea;
+    color: #fc4c02; /* Strava orange */
     margin-bottom: 0.5rem;
 }
 
 .summary-card .label {
     font-size: 0.9rem;
-    color: #666;
+    color: #cccccc;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -80,15 +83,15 @@ header h1 {
 }
 
 .chart-container {
-    background: white;
+    background: #2d2d2d;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #404040;
 }
 
 .chart-container h3 {
     margin-bottom: 1rem;
-    color: #333;
+    color: #ffffff;
     font-size: 1.2rem;
 }
 
@@ -105,62 +108,68 @@ header h1 {
 .axis path,
 .axis line {
     fill: none;
-    stroke: #ddd;
+    stroke: #666666;
     shape-rendering: crispEdges;
 }
 
+.axis text {
+    fill: #cccccc;
+}
+
 .bar {
-    fill: #667eea;
+    fill: #fc4c02; /* Strava orange */
     transition: fill 0.3s ease;
 }
 
 .bar:hover {
-    fill: #764ba2;
+    fill: #ff6b35; /* Lighter orange on hover */
 }
 
 .line {
     fill: none;
-    stroke: #667eea;
+    stroke: #fc4c02; /* Strava orange */
     stroke-width: 2px;
 }
 
 .dot {
-    fill: #667eea;
-    stroke: white;
+    fill: #fc4c02; /* Strava orange */
+    stroke: #ffffff;
     stroke-width: 2px;
 }
 
 .dot:hover {
     r: 6;
+    fill: #ff6b35;
 }
 
 .calendar-cell {
-    stroke: white;
+    stroke: #404040;
     stroke-width: 1px;
 }
 
 .tooltip {
     position: absolute;
-    background: rgba(0,0,0,0.8);
-    color: white;
+    background: rgba(45, 45, 45, 0.95);
+    color: #ffffff;
     padding: 8px 12px;
-    border-radius: 6px;
     font-size: 12px;
     pointer-events: none;
     z-index: 1000;
+    border: 1px solid #666666;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 /* Activities Section */
 .activities-section {
-    background: white;
+    background: #2d2d2d;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #404040;
 }
 
 .activities-section h3 {
     margin-bottom: 1rem;
-    color: #333;
+    color: #ffffff;
 }
 
 .activities-table {
@@ -177,26 +186,25 @@ header h1 {
 .activities-table td {
     padding: 0.75rem;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #404040;
 }
 
 .activities-table th {
-    background: #f8f9fa;
+    background: #363636;
     font-weight: 600;
-    color: #333;
+    color: #ffffff;
+}
+
+.activities-table td {
+    color: #cccccc;
 }
 
 .activities-table tr:hover {
-    background: #f8f9fa;
+    background: #363636;
 }
 
-.activity-name {
-    font-weight: 500;
-    color: #667eea;
-}
-
-.activity-date {
-    color: #666;
+.activity-location {
+    color: #999999;
     font-size: 0.85rem;
 }
 
@@ -206,15 +214,14 @@ header h1 {
     justify-content: center;
     align-items: center;
     height: 200px;
-    color: #666;
+    color: #cccccc;
 }
 
 .error {
-    background: #fee;
-    color: #c33;
+    background: #4a1a1a;
+    color: #ff6666;
     padding: 1rem;
-    border-radius: 6px;
-    border: 1px solid #fcc;
+    border: 1px solid #666666;
 }
 
 /* Responsive Design */
@@ -272,15 +279,13 @@ header h1 {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: #2d2d2d;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
+    background: #666666;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+    background: #888888;
 }

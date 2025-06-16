@@ -1,0 +1,48 @@
+name: Fetch Strava Data
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # Daily at 6 AM UTC
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      fetch_all:
+        description: 'Re-fetch all data since January 1st'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Fetch Strava data
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          FETCH_ALL: ${{ github.event.inputs.fetch_all || 'true' }}
+        run: node src/fetch-strava.js
+        
+      - name: Process data
+        run: node src/process-data.js
+        
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/data/running-data.json
+          git diff --staged --quiet || git commit -m "Update running data $(date '+%Y-%m-%d %H:%M:%S')"
+          git push || echo "No changes to push"

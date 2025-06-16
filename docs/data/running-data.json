@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-06-16T16:21:32.982Z",
+  "lastUpdated": "2025-06-16T19:16:00.145Z",
   "totalActivities": 169,
   "yearToDate": 2025,
   "dataRange": {
@@ -6346,11 +6346,11 @@
     }
   ],
   "summary": {
-    "totalDistance": "564.88",
+    "totalDistance": "909.17",
     "totalTimeHours": "83.6",
     "totalElevationGain": "4714",
-    "averageDistance": "3.34",
-    "averagePace": "8:48",
+    "averageDistance": "5.38",
+    "averagePace": "5:28",
     "dateRange": {
       "start": "2025-01-01",
       "end": "2025-06-16"
@@ -6359,9 +6359,9 @@
     "yearToDateStats": {
       "totalDays": 166,
       "activeDays": 167,
-      "averageDistancePerRun": "3.34",
+      "averageDistancePerRun": "5.38",
       "totalRuns": 169,
-      "longestRun": "8.08"
+      "longestRun": "13.01"
     }
   },
   "analytics": {
@@ -6530,5 +6530,5 @@
       ]
     }
   },
-  "processedAt": "2025-06-16T16:21:33.437Z"
+  "processedAt": "2025-06-16T19:16:00.598Z"
 }

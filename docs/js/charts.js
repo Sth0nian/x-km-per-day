@@ -28,8 +28,11 @@ class RunningCharts {
 
         // Group activities by week
         const weeklyData = this.groupActivitiesByWeek(activities);
+        
+        // Limit to last 12 weeks for better readability
+        const recentWeeks = weeklyData.slice(-12);
 
-        const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+        const margin = { top: 20, right: 30, bottom: 60, left: 50 }; // Increased bottom margin for rotated labels
         const container = d3.select(selector);
         const containerWidth = container.node().getBoundingClientRect().width;
         const width = containerWidth - margin.left - margin.right;
@@ -45,12 +48,12 @@ class RunningCharts {
 
         // Scales
         const xScale = d3.scaleBand()
-            .domain(weeklyData.map(d => d.week))
+            .domain(recentWeeks.map(d => d.week))
             .range([0, width])
-            .padding(0.1);
+            .padding(0.2); // Increased padding for better spacing
 
         const yScale = d3.scaleLinear()
-            .domain([0, d3.max(weeklyData, d => d.distance)])
+            .domain([0, d3.max(recentWeeks, d => d.distance)])
             .nice()
             .range([height, 0]);
 
@@ -58,7 +61,13 @@ class RunningCharts {
         g.append('g')
             .attr('class', 'axis')
             .attr('transform', `translate(0,${height})`)
-            .call(d3.axisBottom(xScale));
+            .call(d3.axisBottom(xScale))
+            .selectAll('text')
+            .style('text-anchor', 'end')
+            .attr('dx', '-.8em')
+            .attr('dy', '.15em')
+            .attr('transform', 'rotate(-45)')
+            .style('font-size', '10px');
 
         g.append('g')
             .attr('class', 'axis')
@@ -66,7 +75,7 @@ class RunningCharts {
 
         // Bars
         g.selectAll('.bar')
-            .data(weeklyData)
+            .data(recentWeeks)
             .enter().append('rect')
             .attr('class', 'bar')
             .attr('x', d => xScale(d.week))

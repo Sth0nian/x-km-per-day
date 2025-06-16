@@ -6,13 +6,20 @@
     <title>Running Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏃‍♂️ Running Dashboard</h1>
+            <h1>🏃‍♂️ X km / day, +1km per month Challenge</h1>
             <div class="last-updated" id="lastUpdated">Loading...</div>
         </header>
+
+        <div class="challenge-description">
+            <h3>Challenge Description</h3>
+            <p>Starting from 3km per day in January, 4km per day in February all the way to 14km per day in December from Jan 1st to Dec 31st running every day.</p>
+        </div>
 
         <div class="summary-cards" id="summaryCards">
             <!-- Summary cards will be populated by JavaScript -->
@@ -47,6 +54,11 @@
             <div class="chart-container">
                 <h3>Heart Rate Analysis</h3>
                 <div id="heartRateChart" class="chart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Running Locations Map</h3>
+                <div id="mapChart" class="chart"></div>
             </div>
         </div>
 

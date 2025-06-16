@@ -146,11 +146,19 @@ class RunningCharts {
             .nice()
             .range([height, 0]);
 
-        // Line generator
-        const line = d3.line()
+        // Create rolling average data for smoother trend line
+        const rollingAverage = this.calculateRollingAverage(data, 5); // 5-day rolling average
+
+        // Line generators
+        const trendLine = d3.line()
+            .x(d => xScale(d.date))
+            .y(d => yScale(d.avgPace))
+            .curve(d3.curveBasis); // Smooth curve
+
+        const dataLine = d3.line()
             .x(d => xScale(d.date))
             .y(d => yScale(d.pace))
-            .curve(d3.curveMonotoneX);
+            .curve(d3.curveLinear);
 
         // Axes
         g.append('g')
@@ -162,24 +170,16 @@ class RunningCharts {
             .attr('class', 'axis')
             .call(d3.axisLeft(yScale).tickFormat(d => this.secondsToPace(d)));
 
-        // Line
-        g.append('path')
-            .datum(data)
-            .attr('class', 'line')
-            .attr('d', line)
-            .attr('fill', 'none')
-            .attr('stroke', this.colors.primary)
-            .attr('stroke-width', 2);
-
-        // Dots
-        g.selectAll('.dot')
+        // Background data points (faded)
+        g.selectAll('.data-dot')
             .data(data)
             .enter().append('circle')
-            .attr('class', 'dot')
+            .attr('class', 'data-dot')
             .attr('cx', d => xScale(d.date))
             .attr('cy', d => yScale(d.pace))
-            .attr('r', 4)
+            .attr('r', 3)
             .attr('fill', this.colors.primary)
+            .attr('opacity', 0.3)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
                 this.tooltip.html(`Date: ${d.date.toLocaleDateString()}<br/>Pace: ${this.secondsToPace(d.pace)}<br/>Distance: ${d.distance} km`)
@@ -189,6 +189,72 @@ class RunningCharts {
             .on('mouseout', () => {
                 this.tooltip.transition().duration(500).style('opacity', 0);
             });
+
+        // Trend line (smooth average)
+        g.append('path')
+            .datum(rollingAverage)
+            .attr('class', 'trend-line')
+            .attr('d', trendLine)
+            .attr('fill', 'none')
+            .attr('stroke', this.colors.secondary)
+            .attr('stroke-width', 4)
+            .attr('opacity', 0.8);
+
+        // Trend line dots for hover interaction
+        g.selectAll('.trend-dot')
+            .data(rollingAverage)
+            .enter().append('circle')
+            .attr('class', 'trend-dot')
+            .attr('cx', d => xScale(d.date))
+            .attr('cy', d => yScale(d.avgPace))
+            .attr('r', 5)
+            .attr('fill', this.colors.secondary)
+            .attr('stroke', '#ffffff')
+            .attr('stroke-width', 2)
+            .attr('opacity', 0)
+            .on('mouseover', function(event, d) {
+                d3.select(this).attr('opacity', 1);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).attr('opacity', 0);
+            });
+
+        // Add legend
+        const legend = g.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${width - 120}, 20)`);
+
+        legend.append('circle')
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', 3)
+            .attr('fill', this.colors.primary)
+            .attr('opacity', 0.3);
+
+        legend.append('text')
+            .attr('x', 10)
+            .attr('y', 0)
+            .attr('dy', '0.32em')
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('Individual runs');
+
+        legend.append('line')
+            .attr('x1', -10)
+            .attr('x2', 10)
+            .attr('y1', 15)
+            .attr('y2', 15)
+            .attr('stroke', this.colors.secondary)
+            .attr('stroke-width', 4)
+            .attr('opacity', 0.8);
+
+        legend.append('text')
+            .attr('x', 15)
+            .attr('y', 15)
+            .attr('dy', '0.32em')
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('5-day average');
 
         // Y-axis label
         g.append('text')
@@ -200,6 +266,27 @@ class RunningCharts {
             .style('font-size', '12px')
             .style('fill', '#cccccc')
             .text('Pace (min/km)');
+    }
+
+    calculateRollingAverage(data, windowSize) {
+        const result = [];
+        
+        for (let i = 0; i < data.length; i++) {
+            const start = Math.max(0, i - Math.floor(windowSize / 2));
+            const end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
+            
+            const window = data.slice(start, end);
+            const avgPace = window.reduce((sum, d) => sum + d.pace, 0) / window.length;
+            
+            result.push({
+                date: data[i].date,
+                avgPace: avgPace,
+                originalPace: data[i].pace,
+                distance: data[i].distance
+            });
+        }
+        
+        return result;
     }
 
     createCalendarChart(activities, selector) {
@@ -276,27 +363,38 @@ class RunningCharts {
     createDistanceDistributionChart(activities, selector) {
         d3.select(selector).selectAll('*').remove();
 
-        // Create distance bins
-        const distances = activities.map(d => parseFloat(d.distanceKm));
-        const bins = [0, 5, 8, 11, 16, 24, 32, Infinity];
-        const binLabels = ['0-5', '5-8', '8-11', '11-16', '16-24', '24-32', '32+'];
+        // Create distance bins specifically for the challenge: 3km to 14km in 1km increments
+        const challengeBins = [];
+        for (let i = 3; i <= 14; i++) {
+            challengeBins.push(i);
+        }
         
-        const binData = bins.slice(0, -1).map((bin, i) => {
+        const binData = challengeBins.map(targetDistance => {
+            // Find activities within 0.5km of the target distance (e.g., 3.0-3.9km for the 3km bin)
             const activitiesInBin = activities.filter(act => {
                 const dist = parseFloat(act.distanceKm);
-                return dist >= bin && dist < bins[i + 1];
+                return dist >= targetDistance && dist < targetDistance + 1;
             });
+            
             const avgPace = activitiesInBin.length > 0 ? 
                 d3.mean(activitiesInBin, d => this.paceToSeconds(d.averagePaceMinKm)) : 0;
             
+            // Calculate expected count for this month (if following the challenge)
+            const currentMonth = new Date().getMonth() + 1; // 1-12
+            const targetMonth = targetDistance - 2; // 3km = month 1, 4km = month 2, etc.
+            const isCurrentChallengeDistance = targetMonth === currentMonth;
+            
             return {
-                label: binLabels[i],
+                distance: targetDistance,
+                label: `${targetDistance}km`,
                 count: activitiesInBin.length,
-                avgPace: avgPace
+                avgPace: avgPace,
+                isTarget: isCurrentChallengeDistance,
+                targetMonth: targetMonth <= 12 ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][targetMonth - 1] : null
             };
         });
 
-        const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+        const margin = { top: 20, right: 30, bottom: 60, left: 50 }; // Extra bottom margin for labels
         const container = d3.select(selector);
         const containerWidth = container.node().getBoundingClientRect().width;
         const width = containerWidth - margin.left - margin.right;
@@ -325,13 +423,15 @@ class RunningCharts {
         g.append('g')
             .attr('class', 'axis')
             .attr('transform', `translate(0,${height})`)
-            .call(d3.axisBottom(xScale));
+            .call(d3.axisBottom(xScale))
+            .selectAll('text')
+            .style('font-size', '11px');
 
         g.append('g')
             .attr('class', 'axis')
             .call(d3.axisLeft(yScale));
 
-        // Bars
+        // Bars with color coding
         g.selectAll('.bar')
             .data(binData)
             .enter().append('rect')
@@ -340,10 +440,17 @@ class RunningCharts {
             .attr('width', xScale.bandwidth())
             .attr('y', d => yScale(d.count))
             .attr('height', d => height - yScale(d.count))
-            .attr('fill', this.colors.secondary)
+            .attr('fill', d => {
+                if (d.isTarget) return this.colors.success; // Current month target
+                if (d.count > 0) return this.colors.secondary; // Completed distances
+                return this.colors.primary; // Future/not attempted
+            })
+            .attr('opacity', d => d.count > 0 ? 1 : 0.3)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
-                this.tooltip.html(`Distance: ${d.label} km<br/>Runs: ${d.count}<br/>Avg Pace: ${this.secondsToPace(d.avgPace)}`)
+                const challengeInfo = d.targetMonth ? `<br/>Challenge month: ${d.targetMonth}` : '';
+                const targetInfo = d.isTarget ? '<br/>🎯 Current target!' : '';
+                this.tooltip.html(`Distance: ${d.label}<br/>Runs: ${d.count}<br/>Avg Pace: ${this.secondsToPace(d.avgPace)}${challengeInfo}${targetInfo}`)
                     .style('left', (event.pageX + 10) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -351,14 +458,26 @@ class RunningCharts {
                 this.tooltip.transition().duration(500).style('opacity', 0);
             });
 
+        // Add month labels below distance labels
+        g.selectAll('.month-label')
+            .data(binData.filter(d => d.targetMonth))
+            .enter().append('text')
+            .attr('class', 'month-label')
+            .attr('x', d => xScale(d.label) + xScale.bandwidth() / 2)
+            .attr('y', height + 25)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '9px')
+            .style('fill', '#999999')
+            .text(d => d.targetMonth);
+
         // Labels
         g.append('text')
             .attr('x', width / 2)
-            .attr('y', height + 35)
+            .attr('y', height + 50)
             .attr('text-anchor', 'middle')
             .style('font-size', '12px')
             .style('fill', '#cccccc')
-            .text('Distance Range (kilometers)');
+            .text('Challenge Distance by Month');
 
         g.append('text')
             .attr('transform', 'rotate(-90)')
@@ -369,6 +488,57 @@ class RunningCharts {
             .style('font-size', '12px')
             .style('fill', '#cccccc')
             .text('Number of Runs');
+
+        // Add legend
+        const legend = g.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${width - 150}, 20)`);
+
+        // Current target
+        legend.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 12)
+            .attr('height', 12)
+            .attr('fill', this.colors.success);
+
+        legend.append('text')
+            .attr('x', 18)
+            .attr('y', 9)
+            .style('font-size', '11px')
+            .style('fill', '#cccccc')
+            .text('Current target');
+
+        // Completed
+        legend.append('rect')
+            .attr('x', 0)
+            .attr('y', 18)
+            .attr('width', 12)
+            .attr('height', 12)
+            .attr('fill', this.colors.secondary);
+
+        legend.append('text')
+            .attr('x', 18)
+            .attr('y', 27)
+            .style('font-size', '11px')
+            .style('fill', '#cccccc')
+            .text('Completed');
+
+        // Not attempted
+        legend.append('rect')
+            .attr('x', 0)
+            .attr('y', 36)
+            .attr('width', 12)
+            .attr('height', 12)
+            .attr('fill', this.colors.primary)
+            .attr('opacity', 0.3);
+
+        legend.append('text')
+            .attr('x', 18)
+            .attr('y', 45)
+            .style('font-size', '11px')
+            .style('fill', '#cccccc')
+            .text('Future target');
     }
 
     createElevationChart(activities, selector) {
@@ -504,11 +674,14 @@ class RunningCharts {
             .nice()
             .range([height, 0]);
 
-        // Line generator
-        const line = d3.line()
+        // Create rolling average data for smoother trend line
+        const rollingAverage = this.calculateRollingAverageHR(data, 5); // 5-day rolling average
+
+        // Line generators
+        const trendLine = d3.line()
             .x(d => xScale(d.date))
-            .y(d => yScale(d.heartRate))
-            .curve(d3.curveMonotoneX);
+            .y(d => yScale(d.avgHeartRate))
+            .curve(d3.curveBasis); // Smooth curve
 
         // Axes
         g.append('g')
@@ -520,24 +693,16 @@ class RunningCharts {
             .attr('class', 'axis')
             .call(d3.axisLeft(yScale));
 
-        // Line
-        g.append('path')
-            .datum(data)
-            .attr('class', 'line')
-            .attr('d', line)
-            .attr('fill', 'none')
-            .attr('stroke', this.colors.danger)
-            .attr('stroke-width', 2);
-
-        // Dots
-        g.selectAll('.dot')
+        // Background data points (faded)
+        g.selectAll('.data-dot')
             .data(data)
             .enter().append('circle')
-            .attr('class', 'dot')
+            .attr('class', 'data-dot')
             .attr('cx', d => xScale(d.date))
             .attr('cy', d => yScale(d.heartRate))
-            .attr('r', 4)
+            .attr('r', 3)
             .attr('fill', this.colors.danger)
+            .attr('opacity', 0.3)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
                 this.tooltip.html(`Date: ${d.date.toLocaleDateString()}<br/>Heart Rate: ${d.heartRate} bpm<br/>Distance: ${d.distance} km<br/>Pace: ${this.secondsToPace(d.pace)}`)
@@ -547,6 +712,72 @@ class RunningCharts {
             .on('mouseout', () => {
                 this.tooltip.transition().duration(500).style('opacity', 0);
             });
+
+        // Trend line (smooth average)
+        g.append('path')
+            .datum(rollingAverage)
+            .attr('class', 'trend-line')
+            .attr('d', trendLine)
+            .attr('fill', 'none')
+            .attr('stroke', this.colors.pink)
+            .attr('stroke-width', 4)
+            .attr('opacity', 0.8);
+
+        // Trend line dots for hover interaction
+        g.selectAll('.trend-dot')
+            .data(rollingAverage)
+            .enter().append('circle')
+            .attr('class', 'trend-dot')
+            .attr('cx', d => xScale(d.date))
+            .attr('cy', d => yScale(d.avgHeartRate))
+            .attr('r', 5)
+            .attr('fill', this.colors.pink)
+            .attr('stroke', '#ffffff')
+            .attr('stroke-width', 2)
+            .attr('opacity', 0)
+            .on('mouseover', function(event, d) {
+                d3.select(this).attr('opacity', 1);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).attr('opacity', 0);
+            });
+
+        // Add legend
+        const legend = g.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${width - 120}, 20)`);
+
+        legend.append('circle')
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', 3)
+            .attr('fill', this.colors.danger)
+            .attr('opacity', 0.3);
+
+        legend.append('text')
+            .attr('x', 10)
+            .attr('y', 0)
+            .attr('dy', '0.32em')
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('Individual runs');
+
+        legend.append('line')
+            .attr('x1', -10)
+            .attr('x2', 10)
+            .attr('y1', 15)
+            .attr('y2', 15)
+            .attr('stroke', this.colors.pink)
+            .attr('stroke-width', 4)
+            .attr('opacity', 0.8);
+
+        legend.append('text')
+            .attr('x', 15)
+            .attr('y', 15)
+            .attr('dy', '0.32em')
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('5-day average');
 
         // Y-axis label
         g.append('text')
@@ -558,6 +789,28 @@ class RunningCharts {
             .style('font-size', '12px')
             .style('fill', '#cccccc')
             .text('Average Heart Rate (bpm)');
+    }
+
+    calculateRollingAverageHR(data, windowSize) {
+        const result = [];
+        
+        for (let i = 0; i < data.length; i++) {
+            const start = Math.max(0, i - Math.floor(windowSize / 2));
+            const end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
+            
+            const window = data.slice(start, end);
+            const avgHeartRate = window.reduce((sum, d) => sum + d.heartRate, 0) / window.length;
+            
+            result.push({
+                date: data[i].date,
+                avgHeartRate: avgHeartRate,
+                originalHeartRate: data[i].heartRate,
+                distance: data[i].distance,
+                pace: data[i].pace
+            });
+        }
+        
+        return result;
     }
 
     createMapChart(activities, selector) {

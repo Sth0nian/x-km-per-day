@@ -12,17 +12,19 @@ class StravaOAuthSetup {
     }
 
     async setup() {
-        console.log('🏃‍♂️ Strava OAuth Setup');
-        console.log('====================\n');
+        console.log('🏃‍♂️ Strava OAuth Setup - Scope Fix');
+        console.log('====================================\n');
         
-        console.log('This script will help you get your Strava refresh token for the GitHub Action.\n');
+        console.log('Your current token is missing the "activity:read_all" permission.');
+        console.log('This script will help you get a new refresh token with the correct scopes.\n');
         
         // Step 1: Generate authorization URL
         const authUrl = this.generateAuthUrl();
-        console.log('Step 1: Visit this URL to authorize your application:');
+        console.log('Step 1: Visit this URL to re-authorize with correct permissions:');
         console.log('\x1b[36m%s\x1b[0m', authUrl);
+        console.log('\nIMPORTANT: Make sure to ALLOW "View data about your activities" when prompted!');
         console.log('\nAfter authorizing, you will be redirected to a URL that looks like:');
-        console.log('your-username.github.io/strava-running-dashboard?state=&code=AUTHORIZATION_CODE&scope=read,activity:read_all');
+        console.log('sth0nian.github.io/x-km-per-day?state=&code=AUTHORIZATION_CODE&scope=read,activity:read_all');
         console.log('\nCopy the "code" parameter from the redirect URL.\n');
         
         // Step 2: Get authorization code from user
@@ -33,11 +35,12 @@ class StravaOAuthSetup {
         const tokens = await this.exchangeCodeForTokens(authCode);
         
         // Step 4: Display results
-        console.log('\n✅ Success! Here are your tokens:');
-        console.log('=================================');
+        console.log('\n✅ Success! Here are your NEW tokens with correct permissions:');
+        console.log('================================================================');
         console.log(`Access Token: ${tokens.access_token}`);
         console.log(`Refresh Token: ${tokens.refresh_token}`);
         console.log(`Expires At: ${new Date(tokens.expires_at * 1000)}`);
+        console.log(`Scopes: ${tokens.scope || 'read,activity:read_all'}`);
         console.log(`Athlete ID: ${tokens.athlete.id}`);
         console.log(`Athlete Name: ${tokens.athlete.firstname} ${tokens.athlete.lastname}`);
         
@@ -45,12 +48,9 @@ class StravaOAuthSetup {
         console.log('==============');
         console.log('1. Go to your GitHub repository settings');
         console.log('2. Navigate to Settings → Secrets and variables → Actions');
-        console.log('3. Add these repository secrets:');
-        console.log('   - STRAVA_CLIENT_ID:', this.clientId);
-        console.log('   - STRAVA_CLIENT_SECRET:', this.clientSecret);
+        console.log('3. UPDATE the STRAVA_REFRESH_TOKEN secret with the NEW value:');
         console.log('   - STRAVA_REFRESH_TOKEN:', tokens.refresh_token);
-        console.log('\n4. Enable GitHub Pages in your repository settings');
-        console.log('5. Push your code and the GitHub Action will run automatically!');
+        console.log('\n4. Re-run your GitHub Action - it should work now!');
         
         // Test the token
         console.log('\n🧪 Testing your access...');
@@ -59,7 +59,7 @@ class StravaOAuthSetup {
 
     generateAuthUrl() {
         const scopes = 'read,activity:read_all';
-        const redirectUri = 'https://Sth0nian.github.io/x-km-per-day'; // Update this
+        const redirectUri = 'https://sth0nian.github.io/x-km-per-day'; // Updated for your repo
         const state = 'github_action_setup';
         
         const params = new URLSearchParams({

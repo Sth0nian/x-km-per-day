@@ -83,6 +83,7 @@ class RunningDashboard {
             this.charts.createDistanceDistributionChart(this.data.activities, '#distanceChart');
             this.charts.createElevationChart(this.data.activities, '#elevationChart');
             this.charts.createHeartRateChart(this.data.activities, '#heartRateChart');
+            this.charts.createMapChart(this.data.activities, '#mapChart');
         } catch (error) {
             console.error('Error creating charts:', error);
             this.showError('Error creating charts. Please refresh the page.');
@@ -194,7 +195,9 @@ class RunningDashboard {
                     totalElevationGain: 50,
                     city: "San Francisco",
                     state: "CA",
-                    averageHeartrate: 150
+                    country: "United States",
+                    averageHeartrate: 150,
+                    startLatLng: [37.7749, -122.4194]
                 },
                 {
                     id: 2,
@@ -205,7 +208,9 @@ class RunningDashboard {
                     totalElevationGain: 120,
                     city: "San Francisco",
                     state: "CA",
-                    averageHeartrate: 145
+                    country: "United States",
+                    averageHeartrate: 145,
+                    startLatLng: [37.7849, -122.4094]
                 },
                 {
                     id: 3,
@@ -216,7 +221,9 @@ class RunningDashboard {
                     totalElevationGain: 300,
                     city: "San Francisco",
                     state: "CA",
-                    averageHeartrate: 155
+                    country: "United States",
+                    averageHeartrate: 155,
+                    startLatLng: [37.7649, -122.4394]
                 },
                 {
                     id: 4,
@@ -227,7 +234,9 @@ class RunningDashboard {
                     totalElevationGain: 500,
                     city: "Mill Valley",
                     state: "CA",
-                    averageHeartrate: 160
+                    country: "United States",
+                    averageHeartrate: 160,
+                    startLatLng: [37.9060, -122.5450]
                 },
                 {
                     id: 5,
@@ -238,7 +247,9 @@ class RunningDashboard {
                     totalElevationGain: 25,
                     city: "San Francisco",
                     state: "CA",
-                    averageHeartrate: 140
+                    country: "United States",
+                    averageHeartrate: 140,
+                    startLatLng: [37.7549, -122.4094]
                 }
             ],
             summary: {

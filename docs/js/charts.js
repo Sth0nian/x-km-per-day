@@ -560,6 +560,204 @@ class RunningCharts {
             .text('Average Heart Rate (bpm)');
     }
 
+    createMapChart(activities, selector) {
+        d3.select(selector).selectAll('*').remove();
+
+        // Filter activities with valid coordinates
+        const activitiesWithCoords = activities.filter(d => 
+            d.startLatLng && 
+            Array.isArray(d.startLatLng) && 
+            d.startLatLng.length === 2 &&
+            d.startLatLng[0] !== null && 
+            d.startLatLng[1] !== null
+        );
+
+        if (activitiesWithCoords.length === 0) {
+            d3.select(selector).append('div')
+                .style('padding', '20px')
+                .style('text-align', 'center')
+                .style('color', '#cccccc')
+                .text('No GPS data available for mapping');
+            return;
+        }
+
+        // Create map container
+        const mapContainer = d3.select(selector)
+            .append('div')
+            .attr('id', 'map-' + Date.now())
+            .style('height', '400px')
+            .style('width', '100%');
+
+        const mapId = mapContainer.attr('id');
+
+        // Initialize Leaflet map
+        setTimeout(() => {
+            const map = L.map(mapId, {
+                zoomControl: true,
+                attributionControl: true
+            });
+
+            // Add dark tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(map);
+
+            // Create bounds for all activities
+            const bounds = L.latLngBounds();
+            const markers = [];
+
+            // Add markers for each activity
+            activitiesWithCoords.forEach((activity, index) => {
+                const [lat, lng] = activity.startLatLng;
+                const latLng = L.latLng(lat, lng);
+                bounds.extend(latLng);
+
+                // Create custom marker with Strava colors
+                const marker = L.circleMarker(latLng, {
+                    radius: 6,
+                    fillColor: this.colors.primary,
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+
+                // Create popup content with activity details
+                const popupContent = this.createActivityPopup(activity);
+                marker.bindPopup(popupContent);
+
+                // Add hover effects
+                marker.on('mouseover', function() {
+                    this.setStyle({
+                        radius: 8,
+                        fillColor: '#ff6b35'
+                    });
+                });
+
+                marker.on('mouseout', function() {
+                    this.setStyle({
+                        radius: 6,
+                        fillColor: '#fc4c02'
+                    });
+                });
+
+                marker.addTo(map);
+                markers.push(marker);
+
+                // Add polyline if available
+                if (activity.polyline) {
+                    this.addPolylineToMap(map, activity);
+                }
+            });
+
+            // Fit map to show all markers
+            if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [20, 20] });
+            }
+
+            // Add legend
+            this.addMapLegend(map, activitiesWithCoords.length);
+
+        }, 100);
+    }
+
+    createActivityPopup(activity) {
+        const date = new Date(activity.date + 'T00:00:00');
+        const location = this.getLocationString(activity);
+        
+        return `
+            <div style="min-width: 200px;">
+                <strong style="color: #fc4c02;">${date.toLocaleDateString()}</strong><br/>
+                <strong>Distance:</strong> ${activity.distanceKm} km<br/>
+                <strong>Pace:</strong> ${activity.averagePaceMinKm}<br/>
+                <strong>Time:</strong> ${this.formatTime(activity.movingTime)}<br/>
+                <strong>Elevation:</strong> ${Math.round(activity.totalElevationGain)} m<br/>
+                ${activity.averageHeartrate ? `<strong>Avg HR:</strong> ${activity.averageHeartrate} bpm<br/>` : ''}
+                ${location ? `<strong>Location:</strong> ${location}` : ''}
+                ${activity.polyline ? '<div class="polyline-info">📍 Route data available</div>' : ''}
+            </div>
+        `;
+    }
+
+    addPolylineToMap(map, activity) {
+        if (!activity.polyline) return;
+
+        try {
+            // Decode polyline (assuming it's encoded)
+            const coordinates = this.decodePolyline(activity.polyline);
+            
+            if (coordinates && coordinates.length > 0) {
+                const polyline = L.polyline(coordinates, {
+                    color: this.colors.accent,
+                    weight: 3,
+                    opacity: 0.7
+                });
+
+                polyline.addTo(map);
+
+                // Add popup to polyline
+                polyline.bindPopup(`
+                    <div>
+                        <strong style="color: #fc4c02;">Route</strong><br/>
+                        Distance: ${activity.distanceKm} km<br/>
+                        ${coordinates.length} GPS points
+                    </div>
+                `);
+            }
+        } catch (error) {
+            console.warn('Error adding polyline:', error);
+        }
+    }
+
+    decodePolyline(encoded) {
+        // Simple polyline decoder - this would need to be enhanced for actual Strava polylines
+        // For now, return empty array as Strava polylines require special decoding
+        return [];
+    }
+
+    getLocationString(activity) {
+        const parts = [];
+        if (activity.city) parts.push(activity.city);
+        if (activity.state) parts.push(activity.state);
+        if (activity.country) parts.push(activity.country);
+        return parts.join(', ');
+    }
+
+    addMapLegend(map, activityCount) {
+        const legend = L.control({ position: 'bottomright' });
+        
+        legend.onAdd = function(map) {
+            const div = L.DomUtil.create('div', 'map-legend');
+            div.style.background = 'rgba(45, 45, 45, 0.9)';
+            div.style.padding = '8px';
+            div.style.color = '#ffffff';
+            div.style.fontSize = '12px';
+            div.style.border = '1px solid #404040';
+            
+            div.innerHTML = `
+                <strong>Running Activities</strong><br/>
+                <span style="color: #fc4c02;">●</span> Start locations (${activityCount})<br/>
+                <span style="color: #ff9500;">━</span> Routes (if available)
+            `;
+            
+            return div;
+        };
+        
+        legend.addTo(map);
+    }
+
+    formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        
+        if (hours > 0) {
+            return `${hours}:${minutes.toString().padStart(2, '0')}h`;
+        } else {
+            return `${minutes}m`;
+        }
+    }
+
     // Helper methods
     groupActivitiesByWeek(activities) {
         const weekMap = d3.rollup(
@@ -581,11 +779,13 @@ class RunningCharts {
     }
 
     paceToSeconds(paceString) {
+        if (!paceString || paceString === '0:00') return 0;
         const [minutes, seconds] = paceString.split(':').map(Number);
         return minutes * 60 + seconds;
     }
 
     secondsToPace(seconds) {
+        if (!seconds || seconds === 0) return '0:00';
         const minutes = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${minutes}:${secs.toString().padStart(2, '0')}`;

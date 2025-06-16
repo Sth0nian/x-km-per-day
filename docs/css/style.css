@@ -32,6 +32,30 @@ header h1 {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
+/* Challenge Description */
+.challenge-description {
+    background: #2d2d2d;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #404040;
+    text-align: center;
+}
+
+.challenge-description h3 {
+    color: #fc4c02;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.challenge-description p {
+    color: #cccccc;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .last-updated {
     font-size: 0.9rem;
     opacity: 0.8;
@@ -271,6 +295,43 @@ header h1 {
 .chart-container,
 .summary-card {
     animation: fadeIn 0.6s ease-out;
+}
+
+/* Map Styles */
+.leaflet-container {
+    background: #2d2d2d !important;
+}
+
+.leaflet-tile {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+.leaflet-control-attribution {
+    background: rgba(45, 45, 45, 0.8) !important;
+    color: #cccccc !important;
+}
+
+.leaflet-control-attribution a {
+    color: #fc4c02 !important;
+}
+
+.leaflet-popup-content-wrapper {
+    background: #2d2d2d !important;
+    color: #ffffff !important;
+    border: 1px solid #404040 !important;
+}
+
+.leaflet-popup-tip {
+    background: #2d2d2d !important;
+    border: 1px solid #404040 !important;
+}
+
+.polyline-info {
+    margin-top: 8px;
+    padding: 8px;
+    background: #363636;
+    font-size: 11px;
+    color: #cccccc;
 }
 
 /* Custom scrollbar */

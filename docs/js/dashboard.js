@@ -1,7 +1,15 @@
 class RunningDashboard {
     constructor() {
         this.data = null;
-        this.charts = new RunningCharts();
+        
+        // Check if RunningCharts is available
+        if (typeof RunningCharts === 'undefined') {
+            console.error('RunningCharts class not found. Make sure charts.js is loaded before dashboard.js');
+            this.charts = null;
+        } else {
+            this.charts = new RunningCharts();
+        }
+        
         this.init();
     }
 
@@ -56,18 +64,29 @@ class RunningDashboard {
     }
 
     renderCharts() {
+        if (!this.charts) {
+            console.error('Charts not available - RunningCharts class not loaded');
+            this.showNoDataMessage();
+            return;
+        }
+
         if (!this.data.activities || this.data.activities.length === 0) {
             this.showNoDataMessage();
             return;
         }
 
         // Create all charts
-        this.charts.createWeeklyDistanceChart(this.data.activities, '#weeklyChart');
-        this.charts.createPaceTrendChart(this.data.activities, '#paceChart');
-        this.charts.createCalendarChart(this.data.activities, '#calendarChart');
-        this.charts.createDistanceDistributionChart(this.data.activities, '#distanceChart');
-        this.charts.createElevationChart(this.data.activities, '#elevationChart');
-        this.charts.createHeartRateChart(this.data.activities, '#heartRateChart');
+        try {
+            this.charts.createWeeklyDistanceChart(this.data.activities, '#weeklyChart');
+            this.charts.createPaceTrendChart(this.data.activities, '#paceChart');
+            this.charts.createCalendarChart(this.data.activities, '#calendarChart');
+            this.charts.createDistanceDistributionChart(this.data.activities, '#distanceChart');
+            this.charts.createElevationChart(this.data.activities, '#elevationChart');
+            this.charts.createHeartRateChart(this.data.activities, '#heartRateChart');
+        } catch (error) {
+            console.error('Error creating charts:', error);
+            this.showError('Error creating charts. Please refresh the page.');
+        }
     }
 
     renderActivitiesTable() {
@@ -236,5 +255,30 @@ class RunningDashboard {
 
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if D3 is loaded
+    if (typeof d3 === 'undefined') {
+        console.error('D3.js not loaded. Please check the script tag.');
+        document.querySelector('.container').innerHTML = `
+            <div class="error">
+                <h2>Missing Dependencies</h2>
+                <p>D3.js library failed to load. Please check your internet connection and refresh the page.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Check if RunningCharts is available
+    if (typeof RunningCharts === 'undefined') {
+        console.error('RunningCharts not loaded. Please check that charts.js loads before dashboard.js');
+        document.querySelector('.container').innerHTML = `
+            <div class="error">
+                <h2>Script Loading Error</h2>
+                <p>Chart library failed to load. Please refresh the page.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Initialize dashboard
     new RunningDashboard();
 });

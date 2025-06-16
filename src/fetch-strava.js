@@ -38,30 +38,60 @@ class StravaDataFetcher {
         return data;
     }
 
-    async fetchActivities(perPage = 50, page = 1) {
+    async fetchActivitiesSinceDate(sinceDate) {
         if (!this.accessToken) {
             await this.refreshAccessToken();
         }
 
-        console.log(`Fetching activities (page ${page}, ${perPage} per page)...`);
+        console.log(`Fetching all activities since ${sinceDate.toISOString().split('T')[0]}...`);
         
-        const response = await fetch(
-            `${this.baseUrl}/athlete/activities?per_page=${perPage}&page=${page}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
+        const allActivities = [];
+        const perPage = 200; // Maximum allowed by Strava API
+        let page = 1;
+        let hasMoreActivities = true;
+        
+        // Convert date to Unix timestamp (Strava API requirement)
+        const afterTimestamp = Math.floor(sinceDate.getTime() / 1000);
+
+        while (hasMoreActivities) {
+            console.log(`Fetching page ${page}...`);
+            
+            const response = await fetch(
+                `${this.baseUrl}/athlete/activities?per_page=${perPage}&page=${page}&after=${afterTimestamp}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch activities: ${response.statusText}`);
+            }
+
+            const activities = await response.json();
+            
+            if (activities.length === 0) {
+                hasMoreActivities = false;
+                console.log('No more activities found');
+            } else {
+                allActivities.push(...activities);
+                console.log(`Fetched ${activities.length} activities (total: ${allActivities.length})`);
+                
+                // If we got fewer than perPage activities, we've reached the end
+                if (activities.length < perPage) {
+                    hasMoreActivities = false;
+                    console.log('Reached end of activities');
+                } else {
+                    page++;
+                    // Add a small delay to be respectful to Strava's API
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch activities: ${response.statusText}`);
         }
 
-        const activities = await response.json();
-        console.log(`Fetched ${activities.length} activities`);
-        
-        return activities;
+        console.log(`Total activities fetched: ${allActivities.length}`);
+        return allActivities;
     }
 
     async fetchDetailedActivity(activityId) {
@@ -95,17 +125,16 @@ class StravaDataFetcher {
 
     async processActivities() {
         try {
-            // Fetch recent activities
-            const activities = await this.fetchActivities(100); // Get last 100 activities
-            const runningActivities = this.filterRunningActivities(activities);
+            // Fetch all activities since January 1st of current year
+            const allActivities = await this.fetchActivitiesSinceDate(new Date(new Date().getFullYear(), 0, 1));
+            const runningActivities = this.filterRunningActivities(allActivities);
             
-            console.log(`Found ${runningActivities.length} running activities`);
+            console.log(`Found ${runningActivities.length} running activities since January 1st`);
 
-            // Process each activity to extract relevant data
+            // Process each activity to extract relevant data (excluding names and specific times)
             const processedActivities = runningActivities.map(activity => ({
                 id: activity.id,
-                name: activity.name,
-                date: activity.start_date,
+                date: activity.start_date.split('T')[0], // Date only, no time
                 distance: activity.distance, // meters
                 distanceMiles: (activity.distance * 0.000621371).toFixed(2), // convert to miles
                 distanceKm: (activity.distance / 1000).toFixed(2), // convert to km
@@ -136,18 +165,27 @@ class StravaDataFetcher {
             const dataDir = path.join(__dirname, '..', 'docs', 'data');
             await fs.mkdir(dataDir, { recursive: true });
 
-            // Save processed data
-            const outputPath = path.join(dataDir, 'running-data.json');
+            // Generate enhanced summary with year-to-date data
             const outputData = {
                 lastUpdated: new Date().toISOString(),
                 totalActivities: processedActivities.length,
+                yearToDate: new Date().getFullYear(),
+                dataRange: {
+                    startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
+                    endDate: new Date().toISOString().split('T')[0],
+                    totalDays: Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24))
+                },
                 activities: processedActivities,
                 summary: this.generateSummary(processedActivities)
             };
 
+            // Save processed data
+            const outputPath = path.join(dataDir, 'running-data.json');
+
             await fs.writeFile(outputPath, JSON.stringify(outputData, null, 2));
             console.log(`Data saved to ${outputPath}`);
-            console.log(`Summary: ${processedActivities.length} activities processed`);
+            console.log(`Year-to-date summary: ${processedActivities.length} activities processed`);
+            console.log(`Date range: ${outputData.dataRange.startDate} to ${outputData.dataRange.endDate}`);
 
         } catch (error) {
             console.error('Error processing activities:', error);
@@ -192,7 +230,14 @@ class StravaDataFetcher {
             averageDistance: avgDistance.toFixed(2),
             averagePace: avgPace,
             dateRange,
-            activitiesPerWeek: (activities.length / this.getWeeksBetweenDates(dates[0], dates[dates.length - 1])).toFixed(1)
+            activitiesPerWeek: (activities.length / this.getWeeksBetweenDates(dates[0], dates[dates.length - 1])).toFixed(1),
+            yearToDateStats: {
+                totalDays: Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24)),
+                activeDays: new Set(activities.map(act => act.date.split('T')[0])).size,
+                averageDistancePerRun: avgDistance.toFixed(2),
+                totalRuns: activities.length,
+                longestRun: activities.length > 0 ? Math.max(...activities.map(act => parseFloat(act.distanceMiles))).toFixed(2) : '0'
+            }
         };
     }
 

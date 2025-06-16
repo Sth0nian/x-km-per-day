@@ -341,8 +341,7 @@ class RunningCharts {
             .filter(d => d.totalElevationGain > 0)
             .map(d => ({
                 distance: parseFloat(d.distanceMiles),
-                elevation: d.totalElevationGain * 3.28084, // Convert to feet
-                name: d.name
+                elevation: d.totalElevationGain * 3.28084 // Convert to feet
             }));
 
         if (data.length === 0) {
@@ -397,7 +396,7 @@ class RunningCharts {
             .attr('opacity', 0.7)
             .on('mouseover', (event, d) => {
                 this.tooltip.transition().duration(200).style('opacity', .9);
-                this.tooltip.html(`${d.name}<br/>Distance: ${d.distance} mi<br/>Elevation: ${Math.round(d.elevation)} ft`)
+                this.tooltip.html(`Distance: ${d.distance} mi<br/>Elevation: ${Math.round(d.elevation)} ft`)
                     .style('left', (event.pageX + 10) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })

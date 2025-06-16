@@ -36,14 +36,15 @@ class RunningDashboard {
     renderSummaryCards() {
         const summaryContainer = document.getElementById('summaryCards');
         const summary = this.data.summary;
+        const yearToDate = this.data.yearToDate || new Date().getFullYear();
 
         const cards = [
-            { value: summary.totalDistance + ' mi', label: 'Total Distance' },
-            { value: this.data.totalActivities, label: 'Total Runs' },
+            { value: summary.totalDistance + ' mi', label: `Total Distance (${yearToDate})` },
+            { value: this.data.totalActivities, label: 'Total Runs YTD' },
             { value: summary.averagePace || 'N/A', label: 'Average Pace' },
             { value: summary.totalTimeHours + ' hrs', label: 'Total Time' },
             { value: summary.totalElevationGain + ' ft', label: 'Total Elevation' },
-            { value: summary.activitiesPerWeek || '0', label: 'Runs per Week' }
+            { value: summary.yearToDateStats?.activeDays || summary.activitiesPerWeek || '0', label: this.data.dataRange ? 'Active Days' : 'Runs per Week' }
         ];
 
         summaryContainer.innerHTML = cards.map(card => `
@@ -83,26 +84,25 @@ class RunningDashboard {
             <table>
                 <thead>
                     <tr>
-                        <th>Activity</th>
                         <th>Date</th>
                         <th>Distance</th>
                         <th>Pace</th>
                         <th>Time</th>
                         <th>Elevation</th>
+                        <th>Location</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${recentActivities.map(activity => `
                         <tr>
-                            <td>
-                                <div class="activity-name">${activity.name}</div>
-                                <div class="activity-date">${activity.city || ''} ${activity.state || ''}</div>
-                            </td>
                             <td>${this.formatDate(activity.date)}</td>
                             <td>${activity.distanceMiles} mi</td>
                             <td>${activity.averagePaceMinMile}</td>
                             <td>${this.formatTime(activity.movingTime)}</td>
                             <td>${Math.round(activity.totalElevationGain * 3.28084)} ft</td>
+                            <td>
+                                <div class="activity-location">${activity.city || ''} ${activity.state || ''}</div>
+                            </td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -116,12 +116,15 @@ class RunningDashboard {
         const lastUpdatedElement = document.getElementById('lastUpdated');
         if (this.data.lastUpdated) {
             const date = new Date(this.data.lastUpdated);
-            lastUpdatedElement.textContent = `Last updated: ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+            const yearInfo = this.data.yearToDate ? ` • ${this.data.yearToDate} Year-to-Date Data` : '';
+            const rangeInfo = this.data.dataRange ? ` • ${this.data.dataRange.startDate} to ${this.data.dataRange.endDate}` : '';
+            lastUpdatedElement.textContent = `Last updated: ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}${yearInfo}${rangeInfo}`;
         }
     }
 
     formatDate(dateString) {
-        const date = new Date(dateString);
+        // Handle both full datetime strings and date-only strings
+        const date = new Date(dateString + (dateString.includes('T') ? '' : 'T00:00:00'));
         return date.toLocaleDateString('en-US', { 
             month: 'short', 
             day: 'numeric',
@@ -165,8 +168,7 @@ class RunningDashboard {
             activities: [
                 {
                     id: 1,
-                    name: "Morning Run",
-                    date: "2025-06-15T06:00:00Z",
+                    date: "2025-06-15",
                     distanceMiles: "3.1",
                     averagePaceMinMile: "8:30",
                     movingTime: 1584,
@@ -177,8 +179,7 @@ class RunningDashboard {
                 },
                 {
                     id: 2,
-                    name: "Evening Jog",
-                    date: "2025-06-13T18:00:00Z",
+                    date: "2025-06-13",
                     distanceMiles: "5.0",
                     averagePaceMinMile: "9:15",
                     movingTime: 2775,
@@ -189,8 +190,7 @@ class RunningDashboard {
                 },
                 {
                     id: 3,
-                    name: "Long Run",
-                    date: "2025-06-11T07:00:00Z",
+                    date: "2025-06-11",
                     distanceMiles: "10.0",
                     averagePaceMinMile: "9:45",
                     movingTime: 5850,
@@ -201,8 +201,7 @@ class RunningDashboard {
                 },
                 {
                     id: 4,
-                    name: "Trail Run",
-                    date: "2025-06-09T08:00:00Z",
+                    date: "2025-06-09",
                     distanceMiles: "6.2",
                     averagePaceMinMile: "10:30",
                     movingTime: 3906,
@@ -213,8 +212,7 @@ class RunningDashboard {
                 },
                 {
                     id: 5,
-                    name: "Recovery Run",
-                    date: "2025-06-07T06:30:00Z",
+                    date: "2025-06-07",
                     distanceMiles: "2.5",
                     averagePaceMinMile: "10:00",
                     movingTime: 1500,

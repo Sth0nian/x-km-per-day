@@ -26,13 +26,12 @@ class DataProcessor {
                 pacePerMile: this.calculatePacePerMile(activity.movingTime, parseFloat(activity.distanceMiles)),
                 elevationPerMile: this.calculateElevationPerMile(activity.totalElevationGain, parseFloat(activity.distanceMiles)),
                 speedMph: this.calculateSpeedMph(parseFloat(activity.distanceMiles), activity.movingTime),
-                weekday: new Date(activity.date).toLocaleDateString('en-US', { weekday: 'long' }),
-                month: new Date(activity.date).toLocaleDateString('en-US', { month: 'long' }),
-                year: new Date(activity.date).getFullYear(),
-                quarterYear: this.getQuarter(new Date(activity.date)),
-                isWeekend: this.isWeekend(new Date(activity.date)),
-                timeOfDay: this.getTimeOfDay(new Date(activity.date)),
-                season: this.getSeason(new Date(activity.date))
+                weekday: new Date(activity.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' }),
+                month: new Date(activity.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long' }),
+                year: new Date(activity.date + 'T00:00:00').getFullYear(),
+                quarterYear: this.getQuarter(new Date(activity.date + 'T00:00:00')),
+                isWeekend: this.isWeekend(new Date(activity.date + 'T00:00:00')),
+                season: this.getSeason(new Date(activity.date + 'T00:00:00'))
             }));
 
             // Generate enhanced analytics
@@ -85,12 +84,8 @@ class DataProcessor {
     }
 
     getTimeOfDay(date) {
-        const hour = date.getHours();
-        if (hour < 6) return 'Early Morning';
-        if (hour < 12) return 'Morning';
-        if (hour < 17) return 'Afternoon';
-        if (hour < 20) return 'Evening';
-        return 'Night';
+        // Removed - no longer tracking time of day for privacy
+        return 'Unknown';
     }
 
     getSeason(date) {
@@ -189,10 +184,8 @@ class DataProcessor {
         const favoriteDay = Object.entries(dayGroups)
             .sort(([,a], [,b]) => b.length - a.length)[0]?.[0] || 'N/A';
 
-        // Group by time of day
-        const timeGroups = this.groupBy(activities, a => a.timeOfDay);
-        const favoriteTime = Object.entries(timeGroups)
-            .sort(([,a], [,b]) => b.length - a.length)[0]?.[0] || 'N/A';
+        // Group by time of day (removed for privacy)
+        const favoriteTime = 'Privacy Protected';
 
         // Seasonal analysis
         const seasonGroups = this.groupBy(activities, a => a.season);
@@ -243,7 +236,7 @@ class DataProcessor {
         const weeks = {};
         
         activities.forEach(activity => {
-            const date = new Date(activity.date);
+            const date = new Date(activity.date + 'T00:00:00');
             const weekStart = new Date(date);
             weekStart.setDate(date.getDate() - date.getDay()); // Start of week (Sunday)
             const weekKey = weekStart.toISOString().split('T')[0];
@@ -298,8 +291,7 @@ class DataProcessor {
         const sortedByDistance = [...activities].sort((a, b) => parseFloat(b.distanceMiles) - parseFloat(a.distanceMiles));
         records.longestRun = sortedByDistance[0] ? {
             distance: sortedByDistance[0].distanceMiles,
-            date: sortedByDistance[0].date,
-            name: sortedByDistance[0].name
+            date: sortedByDistance[0].date
         } : null;
 
         // Pace records (fastest)
@@ -314,8 +306,7 @@ class DataProcessor {
             records.fastestPace = {
                 pace: fastestRun.averagePaceMinMile,
                 distance: fastestRun.distanceMiles,
-                date: fastestRun.date,
-                name: fastestRun.name
+                date: fastestRun.date
             };
         }
 

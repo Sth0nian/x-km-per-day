@@ -84,7 +84,9 @@ class RunningDashboard {
                 { selector: '#distanceChart', method: 'createDistanceDistributionChart' },
                 { selector: '#elevationChart', method: 'createElevationChart' },
                 { selector: '#heartRateChart', method: 'createHeartRateChart' },
-                { selector: '#mapChart', method: 'createMapChart' }
+                { selector: '#mapChart', method: 'createMapChart' },
+                { selector: '#prChart', method: 'createPersonalRecordsChart' },
+                { selector: '#trainingLoadChart', method: 'createTrainingLoadChart' }
             ];
 
             chartElements.forEach(({ selector, method }) => {

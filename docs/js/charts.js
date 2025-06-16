@@ -1166,6 +1166,481 @@ class RunningCharts {
         legend.addTo(map);
     }
 
+    createPersonalRecordsChart(activities, selector) {
+        const element = document.querySelector(selector);
+        if (!element) {
+            console.warn(`PR chart container ${selector} not found, skipping chart`);
+            return;
+        }
+
+        d3.select(selector).selectAll('*').remove();
+
+        if (activities.length === 0) {
+            d3.select(selector).append('div')
+                .style('padding', '20px')
+                .style('text-align', 'center')
+                .style('color', '#cccccc')
+                .text('No activity data available');
+            return;
+        }
+
+        // Define standard distances for PR tracking
+        const standardDistances = [
+            { distance: 5, label: '5K', range: [4.5, 5.5] },
+            { distance: 10, label: '10K', range: [9.5, 10.5] },
+            { distance: 15, label: '15K', range: [14.5, 15.5] },
+            { distance: 21.1, label: 'Half Marathon', range: [20.5, 21.6] }
+        ];
+
+        // Find PRs for each distance
+        const personalRecords = standardDistances.map(std => {
+            const relevantActivities = activities.filter(act => {
+                const dist = parseFloat(act.distanceKm);
+                return dist >= std.range[0] && dist <= std.range[1] && act.averagePaceMinKm !== '0:00';
+            });
+
+            if (relevantActivities.length === 0) return null;
+
+            // Sort by pace (fastest first)
+            const sortedByPace = relevantActivities.sort((a, b) => 
+                this.paceToSeconds(a.averagePaceMinKm) - this.paceToSeconds(b.averagePaceMinKm)
+            );
+
+            // Find progression of PRs over time
+            const prHistory = [];
+            let currentBest = Infinity;
+
+            sortedByPace.forEach(activity => {
+                const pace = this.paceToSeconds(activity.averagePaceMinKm);
+                if (pace < currentBest) {
+                    currentBest = pace;
+                    prHistory.push({
+                        date: new Date(activity.date + 'T00:00:00'),
+                        pace: pace,
+                        distance: parseFloat(activity.distanceKm),
+                        totalTime: activity.movingTime,
+                        activity: activity
+                    });
+                }
+            });
+
+            return {
+                distance: std.distance,
+                label: std.label,
+                currentPR: prHistory[prHistory.length - 1],
+                history: prHistory,
+                totalAttempts: relevantActivities.length
+            };
+        }).filter(pr => pr !== null);
+
+        if (personalRecords.length === 0) {
+            d3.select(selector).append('div')
+                .style('padding', '20px')
+                .style('text-align', 'center')
+                .style('color', '#cccccc')
+                .text('No standard distance PRs found');
+            return;
+        }
+
+        const margin = { top: 40, right: 30, bottom: 60, left: 120 };
+        const container = d3.select(selector);
+        const containerWidth = container.node().getBoundingClientRect().width;
+        const width = containerWidth - margin.left - margin.right;
+        const height = Math.max(300, personalRecords.length * 80) - margin.top - margin.bottom;
+
+        const svg = container
+            .append('svg')
+            .attr('width', containerWidth)
+            .attr('height', height + margin.top + margin.bottom);
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Create scales
+        const yScale = d3.scaleBand()
+            .domain(personalRecords.map(d => d.label))
+            .range([0, height])
+            .padding(0.3);
+
+        const allDates = personalRecords.flatMap(pr => pr.history.map(h => h.date));
+        const xScale = d3.scaleTime()
+            .domain(d3.extent(allDates))
+            .range([0, width]);
+
+        // Add title
+        g.append('text')
+            .attr('x', width / 2)
+            .attr('y', -20)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '16px')
+            .style('fill', '#fc4c02')
+            .style('font-weight', 'bold')
+            .text('Personal Records Timeline');
+
+        // Create timeline for each distance
+        personalRecords.forEach((pr, index) => {
+            const yPos = yScale(pr.label) + yScale.bandwidth() / 2;
+
+            // Background line
+            g.append('line')
+                .attr('x1', 0)
+                .attr('x2', width)
+                .attr('y1', yPos)
+                .attr('y2', yPos)
+                .attr('stroke', '#444444')
+                .attr('stroke-width', 2);
+
+            // Distance label
+            g.append('text')
+                .attr('x', -10)
+                .attr('y', yPos)
+                .attr('text-anchor', 'end')
+                .attr('dy', '0.35em')
+                .style('font-size', '14px')
+                .style('font-weight', 'bold')
+                .style('fill', '#ffffff')
+                .text(pr.label);
+
+            // PR progression line
+            if (pr.history.length > 1) {
+                const line = d3.line()
+                    .x(d => xScale(d.date))
+                    .y(d => yPos)
+                    .curve(d3.curveStepAfter);
+
+                g.append('path')
+                    .datum(pr.history)
+                    .attr('d', line)
+                    .attr('stroke', this.colors.success)
+                    .attr('stroke-width', 3)
+                    .attr('fill', 'none');
+            }
+
+            // PR points
+            g.selectAll(`.pr-point-${index}`)
+                .data(pr.history)
+                .enter().append('circle')
+                .attr('class', `pr-point-${index}`)
+                .attr('cx', d => xScale(d.date))
+                .attr('cy', yPos)
+                .attr('r', 6)
+                .attr('fill', this.colors.success)
+                .attr('stroke', '#ffffff')
+                .attr('stroke-width', 2)
+                .style('cursor', 'pointer')
+                .on('mouseover', (event, d) => {
+                    this.tooltip.transition().duration(200).style('opacity', .9);
+                    this.tooltip.html(`
+                        <strong>${pr.label} PR</strong><br/>
+                        Date: ${d.date.toLocaleDateString()}<br/>
+                        Time: ${this.formatTimeHMS(d.totalTime)}<br/>
+                        Pace: ${this.secondsToPace(d.pace)}/km<br/>
+                        Distance: ${d.distance} km
+                    `)
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 28) + 'px');
+                })
+                .on('mouseout', () => {
+                    this.tooltip.transition().duration(500).style('opacity', 0);
+                });
+
+            // Current PR time display
+            g.append('text')
+                .attr('x', width + 10)
+                .attr('y', yPos - 8)
+                .style('font-size', '12px')
+                .style('font-weight', 'bold')
+                .style('fill', this.colors.success)
+                .text(this.formatTimeHMS(pr.currentPR.totalTime));
+
+            // Current PR pace
+            g.append('text')
+                .attr('x', width + 10)
+                .attr('y', yPos + 8)
+                .style('font-size', '10px')
+                .style('fill', '#cccccc')
+                .text(`${this.secondsToPace(pr.currentPR.pace)}/km`);
+        });
+
+        // Add time axis
+        g.append('g')
+            .attr('class', 'axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b %Y')))
+            .selectAll('text')
+            .style('font-size', '10px')
+            .style('fill', '#cccccc');
+
+        // Add legend
+        const legend = g.append('g')
+            .attr('transform', `translate(10, 10)`);
+
+        legend.append('circle')
+            .attr('r', 6)
+            .attr('fill', this.colors.success);
+
+        legend.append('text')
+            .attr('x', 15)
+            .attr('y', 5)
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('Personal Record');
+    }
+
+    createTrainingLoadChart(activities, selector) {
+        const element = document.querySelector(selector);
+        if (!element) {
+            console.warn(`Training load container ${selector} not found, skipping chart`);
+            return;
+        }
+
+        d3.select(selector).selectAll('*').remove();
+
+        if (activities.length === 0) {
+            d3.select(selector).append('div')
+                .style('padding', '20px')
+                .style('text-align', 'center')
+                .style('color', '#cccccc')
+                .text('No activity data available');
+            return;
+        }
+
+        // Calculate training load for each activity and group by week
+        const weeklyLoad = this.calculateWeeklyTrainingLoad(activities);
+        
+        // Take last 12 weeks
+        const recentWeeks = weeklyLoad.slice(-12);
+
+        const margin = { top: 20, right: 30, bottom: 60, left: 50 };
+        const container = d3.select(selector);
+        const containerWidth = container.node().getBoundingClientRect().width;
+        const width = containerWidth - margin.left - margin.right;
+        const height = 300 - margin.top - margin.bottom;
+
+        const svg = container
+            .append('svg')
+            .attr('width', containerWidth)
+            .attr('height', 300);
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleBand()
+            .domain(recentWeeks.map(d => d.week))
+            .range([0, width])
+            .padding(0.1);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(recentWeeks, d => d.totalLoad)])
+            .nice()
+            .range([height, 0]);
+
+        // Create stacked data for different load types
+        const stack = d3.stack()
+            .keys(['easyLoad', 'moderateLoad', 'hardLoad']);
+
+        const stackedData = stack(recentWeeks);
+
+        // Color scale for load intensity
+        const loadColors = {
+            easyLoad: this.colors.success,      // Green for easy
+            moderateLoad: this.colors.warning,  // Yellow for moderate  
+            hardLoad: this.colors.danger        // Red for hard
+        };
+
+        // Axes
+        g.append('g')
+            .attr('class', 'axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(xScale))
+            .selectAll('text')
+            .style('text-anchor', 'end')
+            .attr('dx', '-.8em')
+            .attr('dy', '.15em')
+            .attr('transform', 'rotate(-45)')
+            .style('font-size', '10px');
+
+        g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(yScale));
+
+        // Create stacked bars
+        g.selectAll('.load-layer')
+            .data(stackedData)
+            .enter().append('g')
+            .attr('class', 'load-layer')
+            .attr('fill', d => loadColors[d.key])
+            .selectAll('rect')
+            .data(d => d)
+            .enter().append('rect')
+            .attr('x', d => xScale(d.data.week))
+            .attr('y', d => yScale(d[1]))
+            .attr('height', d => yScale(d[0]) - yScale(d[1]))
+            .attr('width', xScale.bandwidth())
+            .on('mouseover', (event, d) => {
+                const weekData = d.data;
+                this.tooltip.transition().duration(200).style('opacity', .9);
+                this.tooltip.html(`
+                    <strong>Week: ${weekData.week}</strong><br/>
+                    Total Load: ${weekData.totalLoad.toFixed(0)}<br/>
+                    Easy: ${weekData.easyLoad.toFixed(0)}<br/>
+                    Moderate: ${weekData.moderateLoad.toFixed(0)}<br/>
+                    Hard: ${weekData.hardLoad.toFixed(0)}<br/>
+                    Recovery Status: ${weekData.recoveryStatus}<br/>
+                    Runs: ${weekData.runs}
+                `)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', () => {
+                this.tooltip.transition().duration(500).style('opacity', 0);
+            });
+
+        // Add recovery indicators above bars
+        g.selectAll('.recovery-indicator')
+            .data(recentWeeks)
+            .enter().append('text')
+            .attr('class', 'recovery-indicator')
+            .attr('x', d => xScale(d.week) + xScale.bandwidth() / 2)
+            .attr('y', d => yScale(d.totalLoad) - 10)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .text(d => {
+                if (d.recoveryStatus === 'High Risk') return '⚠️';
+                if (d.recoveryStatus === 'Moderate') return '⚡';
+                return '✅';
+            });
+
+        // Labels
+        g.append('text')
+            .attr('x', width / 2)
+            .attr('y', height + 50)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('Training Week');
+
+        g.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - margin.left)
+            .attr('x', 0 - (height / 2))
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', '#cccccc')
+            .text('Training Load Score');
+
+        // Add legend
+        const legend = g.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${width - 120}, 20)`);
+
+        const legendItems = [
+            { key: 'hardLoad', label: 'Hard', color: loadColors.hardLoad },
+            { key: 'moderateLoad', label: 'Moderate', color: loadColors.moderateLoad },
+            { key: 'easyLoad', label: 'Easy', color: loadColors.easyLoad }
+        ];
+
+        legendItems.forEach((item, i) => {
+            legend.append('rect')
+                .attr('x', 0)
+                .attr('y', i * 18)
+                .attr('width', 12)
+                .attr('height', 12)
+                .attr('fill', item.color);
+
+            legend.append('text')
+                .attr('x', 18)
+                .attr('y', i * 18 + 9)
+                .style('font-size', '11px')
+                .style('fill', '#cccccc')
+                .text(item.label);
+        });
+
+        // Recovery status legend
+        legend.append('text')
+            .attr('x', 0)
+            .attr('y', 70)
+            .style('font-size', '11px')
+            .style('fill', '#cccccc')
+            .text('✅ Good  ⚡ Moderate  ⚠️ Risk');
+    }
+
+    calculateWeeklyTrainingLoad(activities) {
+        // Group activities by week
+        const weekMap = d3.rollup(
+            activities,
+            v => v,
+            d => d3.timeWeek(new Date(d.date + 'T00:00:00'))
+        );
+
+        return Array.from(weekMap, ([week, weekActivities]) => {
+            const weekData = {
+                week: d3.timeFormat('%m/%d')(week),
+                runs: weekActivities.length,
+                totalDistance: 0,
+                easyLoad: 0,
+                moderateLoad: 0,
+                hardLoad: 0,
+                totalLoad: 0
+            };
+
+            weekActivities.forEach(activity => {
+                const distance = parseFloat(activity.distanceKm);
+                const pace = this.paceToSeconds(activity.averagePaceMinKm);
+                
+                // Calculate training load based on distance and intensity
+                let intensityMultiplier = 1;
+                
+                // Determine intensity based on pace (adjust these thresholds as needed)
+                if (pace > 0) {
+                    if (pace <= 300) { // < 5:00/km - Hard
+                        intensityMultiplier = 3;
+                        weekData.hardLoad += distance * intensityMultiplier;
+                    } else if (pace <= 360) { // 5:00-6:00/km - Moderate
+                        intensityMultiplier = 2;
+                        weekData.moderateLoad += distance * intensityMultiplier;
+                    } else { // > 6:00/km - Easy
+                        intensityMultiplier = 1;
+                        weekData.easyLoad += distance * intensityMultiplier;
+                    }
+                } else {
+                    // If no pace data, assume moderate
+                    intensityMultiplier = 1.5;
+                    weekData.moderateLoad += distance * intensityMultiplier;
+                }
+
+                weekData.totalDistance += distance;
+            });
+
+            weekData.totalLoad = weekData.easyLoad + weekData.moderateLoad + weekData.hardLoad;
+
+            // Determine recovery status
+            if (weekData.totalLoad > 50 && weekData.hardLoad > 20) {
+                weekData.recoveryStatus = 'High Risk';
+            } else if (weekData.totalLoad > 30) {
+                weekData.recoveryStatus = 'Moderate';
+            } else {
+                weekData.recoveryStatus = 'Good';
+            }
+
+            return weekData;
+        }).sort((a, b) => new Date(a.week) - new Date(b.week));
+    }
+
+    formatTimeHMS(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        if (hours > 0) {
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        } else {
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+    }
+
     formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);

@@ -561,6 +561,12 @@ class RunningCharts {
     }
 
     createMapChart(activities, selector) {
+        const element = document.querySelector(selector);
+        if (!element) {
+            console.warn(`Map container ${selector} not found, skipping map chart`);
+            return;
+        }
+
         d3.select(selector).selectAll('*').remove();
 
         // Filter activities with valid coordinates
@@ -581,6 +587,16 @@ class RunningCharts {
             return;
         }
 
+        // Check if Leaflet is available
+        if (typeof L === 'undefined') {
+            d3.select(selector).append('div')
+                .style('padding', '20px')
+                .style('text-align', 'center')
+                .style('color', '#cccccc')
+                .text('Map library not loaded');
+            return;
+        }
+
         // Create map container
         const mapContainer = d3.select(selector)
             .append('div')
@@ -592,73 +608,79 @@ class RunningCharts {
 
         // Initialize Leaflet map
         setTimeout(() => {
-            const map = L.map(mapId, {
-                zoomControl: true,
-                attributionControl: true
-            });
-
-            // Add dark tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 18
-            }).addTo(map);
-
-            // Create bounds for all activities
-            const bounds = L.latLngBounds();
-            const markers = [];
-
-            // Add markers for each activity
-            activitiesWithCoords.forEach((activity, index) => {
-                const [lat, lng] = activity.startLatLng;
-                const latLng = L.latLng(lat, lng);
-                bounds.extend(latLng);
-
-                // Create custom marker with Strava colors
-                const marker = L.circleMarker(latLng, {
-                    radius: 6,
-                    fillColor: this.colors.primary,
-                    color: '#ffffff',
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.8
+            try {
+                const map = L.map(mapId, {
+                    zoomControl: true,
+                    attributionControl: true
                 });
 
-                // Create popup content with activity details
-                const popupContent = this.createActivityPopup(activity);
-                marker.bindPopup(popupContent);
+                // Add dark tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18
+                }).addTo(map);
 
-                // Add hover effects
-                marker.on('mouseover', function() {
-                    this.setStyle({
-                        radius: 8,
-                        fillColor: '#ff6b35'
-                    });
-                });
+                // Create bounds for all activities
+                const bounds = L.latLngBounds();
+                const markers = [];
 
-                marker.on('mouseout', function() {
-                    this.setStyle({
+                // Add markers for each activity
+                activitiesWithCoords.forEach((activity, index) => {
+                    const [lat, lng] = activity.startLatLng;
+                    const latLng = L.latLng(lat, lng);
+                    bounds.extend(latLng);
+
+                    // Create custom marker with Strava colors
+                    const marker = L.circleMarker(latLng, {
                         radius: 6,
-                        fillColor: '#fc4c02'
+                        fillColor: this.colors.primary,
+                        color: '#ffffff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
                     });
+
+                    // Create popup content with activity details
+                    const popupContent = this.createActivityPopup(activity);
+                    marker.bindPopup(popupContent);
+
+                    // Add hover effects
+                    marker.on('mouseover', function() {
+                        this.setStyle({
+                            radius: 8,
+                            fillColor: '#ff6b35'
+                        });
+                    });
+
+                    marker.on('mouseout', function() {
+                        this.setStyle({
+                            radius: 6,
+                            fillColor: '#fc4c02'
+                        });
+                    });
+
+                    marker.addTo(map);
+                    markers.push(marker);
+
+                    // Add polyline if available
+                    if (activity.polyline) {
+                        this.addPolylineToMap(map, activity);
+                    }
                 });
 
-                marker.addTo(map);
-                markers.push(marker);
-
-                // Add polyline if available
-                if (activity.polyline) {
-                    this.addPolylineToMap(map, activity);
+                // Fit map to show all markers
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [20, 20] });
                 }
-            });
 
-            // Fit map to show all markers
-            if (bounds.isValid()) {
-                map.fitBounds(bounds, { padding: [20, 20] });
+                // Add legend
+                this.addMapLegend(map, activitiesWithCoords.length);
+
+            } catch (error) {
+                console.error('Error creating map:', error);
+                d3.select(selector).select('#' + mapId)
+                    .html('<div style="padding: 20px; text-align: center; color: #cccccc;">Error loading map</div>');
             }
-
-            // Add legend
-            this.addMapLegend(map, activitiesWithCoords.length);
-
         }, 100);
     }
 

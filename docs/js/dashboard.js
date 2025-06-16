@@ -75,15 +75,26 @@ class RunningDashboard {
             return;
         }
 
-        // Create all charts
+        // Create all charts - check if elements exist first
         try {
-            this.charts.createWeeklyDistanceChart(this.data.activities, '#weeklyChart');
-            this.charts.createPaceTrendChart(this.data.activities, '#paceChart');
-            this.charts.createCalendarChart(this.data.activities, '#calendarChart');
-            this.charts.createDistanceDistributionChart(this.data.activities, '#distanceChart');
-            this.charts.createElevationChart(this.data.activities, '#elevationChart');
-            this.charts.createHeartRateChart(this.data.activities, '#heartRateChart');
-            this.charts.createMapChart(this.data.activities, '#mapChart');
+            const chartElements = [
+                { selector: '#weeklyChart', method: 'createWeeklyDistanceChart' },
+                { selector: '#paceChart', method: 'createPaceTrendChart' },
+                { selector: '#calendarChart', method: 'createCalendarChart' },
+                { selector: '#distanceChart', method: 'createDistanceDistributionChart' },
+                { selector: '#elevationChart', method: 'createElevationChart' },
+                { selector: '#heartRateChart', method: 'createHeartRateChart' },
+                { selector: '#mapChart', method: 'createMapChart' }
+            ];
+
+            chartElements.forEach(({ selector, method }) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    this.charts[method](this.data.activities, selector);
+                } else {
+                    console.warn(`Element ${selector} not found, skipping chart`);
+                }
+            });
         } catch (error) {
             console.error('Error creating charts:', error);
             this.showError('Error creating charts. Please refresh the page.');
@@ -92,6 +103,11 @@ class RunningDashboard {
 
     renderActivitiesTable() {
         const container = document.getElementById('activitiesTable');
+        
+        if (!container) {
+            console.warn('Activities table container not found');
+            return;
+        }
         
         if (!this.data.activities || this.data.activities.length === 0) {
             container.innerHTML = '<p>No activities found.</p>';

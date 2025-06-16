@@ -51,6 +51,33 @@ class StravaDataFetcher {
         return data;
     }
 
+    async testAccessToken() {
+        if (!this.accessToken) {
+            await this.refreshAccessToken();
+        }
+
+        console.log('Testing access token with athlete endpoint...');
+        
+        const response = await fetch(`${this.baseUrl}/athlete`, {
+            headers: {
+                'Authorization': `Bearer ${this.accessToken}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        console.log(`Athlete endpoint response status: ${response.status}`);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Athlete endpoint failed: ${errorText}`);
+            throw new Error(`Access token test failed: ${response.status} ${response.statusText}`);
+        }
+
+        const athlete = await response.json();
+        console.log(`Successfully connected to athlete: ${athlete.firstname} ${athlete.lastname} (ID: ${athlete.id})`);
+        return athlete;
+    }
+
     async fetchActivitiesSinceDate(sinceDate) {
         if (!this.accessToken) {
             await this.refreshAccessToken();
@@ -65,21 +92,29 @@ class StravaDataFetcher {
         
         // Convert date to Unix timestamp (Strava API requirement)
         const afterTimestamp = Math.floor(sinceDate.getTime() / 1000);
+        console.log(`After timestamp: ${afterTimestamp}`);
 
         while (hasMoreActivities) {
             console.log(`Fetching page ${page}...`);
             
-            const response = await fetch(
-                `${this.baseUrl}/athlete/activities?per_page=${perPage}&page=${page}&after=${afterTimestamp}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${this.accessToken}`
-                    }
+            const url = `${this.baseUrl}/athlete/activities?per_page=${perPage}&page=${page}&after=${afterTimestamp}`;
+            console.log(`Request URL: ${url}`);
+            console.log(`Using access token: ${this.accessToken ? 'Yes (' + this.accessToken.substring(0, 10) + '...)' : 'No'}`);
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`,
+                    'Accept': 'application/json'
                 }
-            );
+            });
+
+            console.log(`Response status: ${response.status}`);
+            console.log(`Response headers:`, Object.fromEntries(response.headers.entries()));
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch activities: ${response.statusText}`);
+                const errorText = await response.text();
+                console.error(`API Error Response: ${errorText}`);
+                throw new Error(`Failed to fetch activities: ${response.status} ${response.statusText} - ${errorText}`);
             }
 
             const activities = await response.json();
@@ -138,6 +173,9 @@ class StravaDataFetcher {
 
     async processActivities() {
         try {
+            // Test the access token first with a simple API call
+            await this.testAccessToken();
+            
             // Fetch all activities since January 1st of current year
             const allActivities = await this.fetchActivitiesSinceDate(new Date(new Date().getFullYear(), 0, 1));
             const runningActivities = this.filterRunningActivities(allActivities);

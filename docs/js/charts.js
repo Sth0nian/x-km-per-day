@@ -292,72 +292,216 @@ class RunningCharts {
     createCalendarChart(activities, selector) {
         d3.select(selector).selectAll('*').remove();
 
-        // Group activities by date
-        const dailyData = d3.rollup(
+        // Group activities by month
+        const monthlyData = d3.rollup(
             activities,
             v => ({
                 count: v.length,
-                distance: d3.sum(v, d => parseFloat(d.distanceKm)),
-                avgPace: d3.mean(v, d => this.paceToSeconds(d.averagePaceMinKm))
+                totalDistance: d3.sum(v, d => parseFloat(d.distanceKm)),
+                avgDistance: d3.mean(v, d => parseFloat(d.distanceKm)),
+                avgPace: d3.mean(v, d => this.paceToSeconds(d.averagePaceMinKm)),
+                totalTime: d3.sum(v, d => d.movingTime),
+                activities: v
             }),
-            d => d3.timeDay(new Date(d.date + 'T00:00:00'))
+            d => {
+                const date = new Date(d.date + 'T00:00:00');
+                return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+            }
         );
 
         const container = d3.select(selector);
         const containerWidth = container.node().getBoundingClientRect().width;
-        const cellSize = Math.min(containerWidth / 53, 15); // 53 weeks max
-        const height = cellSize * 7 + 40; // 7 days + margin
+        const margin = { top: 20, right: 20, bottom: 40, left: 20 };
+        const width = containerWidth - margin.left - margin.right;
+        const height = 350 - margin.top - margin.bottom;
 
         const svg = container
             .append('svg')
             .attr('width', containerWidth)
-            .attr('height', height);
+            .attr('height', 350);
 
-        const now = new Date();
-        const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-        
-        const colorScale = d3.scaleSequential(d3.interpolateBlues)
-            .domain([0, d3.max(Array.from(dailyData.values()), d => d.distance)]);
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // Create calendar grid
-        const days = d3.timeDays(yearAgo, now);
-        
-        svg.selectAll('.calendar-cell')
-            .data(days)
-            .enter().append('rect')
-            .attr('class', 'calendar-cell')
-            .attr('x', d => d3.timeWeek.count(yearAgo, d) * cellSize)
-            .attr('y', d => d.getDay() * cellSize)
-            .attr('width', cellSize - 1)
-            .attr('height', cellSize - 1)
-            .attr('fill', d => {
-                const data = dailyData.get(d);
-                return data ? colorScale(data.distance) : '#eee';
-            })
-            .on('mouseover', (event, d) => {
-                const data = dailyData.get(d);
-                if (data) {
-                    this.tooltip.transition().duration(200).style('opacity', .9);
-                    this.tooltip.html(`${d.toLocaleDateString()}<br/>Distance: ${data.distance.toFixed(1)} km<br/>Runs: ${data.count}<br/>Avg Pace: ${this.secondsToPace(data.avgPace)}`)
-                        .style('left', (event.pageX + 10) + 'px')
-                        .style('top', (event.pageY - 28) + 'px');
-                }
-            })
-            .on('mouseout', () => {
-                this.tooltip.transition().duration(500).style('opacity', 0);
+        // Convert to array and sort by date
+        const monthsArray = Array.from(monthlyData, ([month, data]) => ({
+            month: month,
+            monthName: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+            shortMonth: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short' }),
+            ...data
+        })).sort((a, b) => a.month.localeCompare(b.month));
+
+        // Take last 12 months for better visibility
+        const recentMonths = monthsArray.slice(-12);
+
+        if (recentMonths.length === 0) {
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height / 2)
+                .attr('text-anchor', 'middle')
+                .style('fill', '#cccccc')
+                .text('No monthly data available');
+            return;
+        }
+
+        // Calculate grid layout
+        const cols = Math.min(4, recentMonths.length);
+        const rows = Math.ceil(recentMonths.length / cols);
+        const cardWidth = (width - (cols - 1) * 15) / cols;
+        const cardHeight = (height - (rows - 1) * 15) / rows;
+
+        // Color scale based on total distance
+        const maxDistance = d3.max(recentMonths, d => d.totalDistance);
+        const colorScale = d3.scaleSequential(d3.interpolateOranges)
+            .domain([0, maxDistance]);
+
+        // Create month cards
+        const monthCards = g.selectAll('.month-card')
+            .data(recentMonths)
+            .enter().append('g')
+            .attr('class', 'month-card')
+            .attr('transform', (d, i) => {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const x = col * (cardWidth + 15);
+                const y = row * (cardHeight + 15);
+                return `translate(${x},${y})`;
             });
 
-        // Month labels
-        const months = d3.timeMonths(yearAgo, now);
-        svg.selectAll('.month-label')
-            .data(months)
-            .enter().append('text')
-            .attr('class', 'month-label')
-            .attr('x', d => d3.timeWeek.count(yearAgo, d) * cellSize)
-            .attr('y', -5)
+        // Card backgrounds
+        monthCards.append('rect')
+            .attr('width', cardWidth)
+            .attr('height', cardHeight)
+            .attr('fill', d => d.totalDistance > 0 ? colorScale(d.totalDistance) : '#3a3a3a')
+            .attr('stroke', '#555555')
+            .attr('stroke-width', 1)
+            .attr('rx', 8)
+            .attr('ry', 8)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
+                d3.select(this)
+                    .attr('stroke', '#fc4c02')
+                    .attr('stroke-width', 2);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this)
+                    .attr('stroke', '#555555')
+                    .attr('stroke-width', 1);
+            });
+
+        // Month names
+        monthCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', 20)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '14px')
+            .style('font-weight', 'bold')
+            .style('fill', d => d.totalDistance > 50 ? '#000000' : '#ffffff')
+            .text(d => d.shortMonth);
+
+        // Total distance (large number)
+        monthCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight / 2 + 5)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '24px')
+            .style('font-weight', 'bold')
+            .style('fill', d => d.totalDistance > 50 ? '#000000' : '#fc4c02')
+            .text(d => d.totalDistance.toFixed(0));
+
+        // "km" label
+        monthCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight / 2 + 20)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', d => d.totalDistance > 50 ? '#333333' : '#cccccc')
+            .text('km');
+
+        // Number of runs
+        monthCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight - 25)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .style('fill', d => d.totalDistance > 50 ? '#333333' : '#cccccc')
+            .text(d => `${d.count} runs`);
+
+        // Average pace
+        monthCards.append('text')
+            .attr('x', cardWidth / 2)
+            .attr('y', cardHeight - 10)
+            .attr('text-anchor', 'middle')
             .style('font-size', '10px')
-            .style('fill', '#666')
-            .text(d => d3.timeFormat('%b')(d));
+            .style('fill', d => d.totalDistance > 50 ? '#666666' : '#999999')
+            .text(d => d.avgPace ? this.secondsToPace(d.avgPace) + '/km' : '');
+
+        // Add tooltips
+        monthCards.on('mouseover', (event, d) => {
+            this.tooltip.transition().duration(200).style('opacity', .9);
+            this.tooltip.html(`
+                <strong>${d.monthName}</strong><br/>
+                Distance: ${d.totalDistance.toFixed(1)} km<br/>
+                Runs: ${d.count}<br/>
+                Avg Distance: ${d.avgDistance.toFixed(1)} km<br/>
+                Avg Pace: ${this.secondsToPace(d.avgPace)}<br/>
+                Total Time: ${Math.floor(d.totalTime / 3600)}h ${Math.floor((d.totalTime % 3600) / 60)}m
+            `)
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 28) + 'px');
+        })
+        .on('mouseout', () => {
+            this.tooltip.transition().duration(500).style('opacity', 0);
+        });
+
+        // Add title
+        g.append('text')
+            .attr('x', width / 2)
+            .attr('y', -5)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '14px')
+            .style('fill', '#cccccc')
+            .style('font-weight', '500')
+            .text('Monthly Running Summary');
+
+        // Add legend
+        const legend = g.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${width - 120}, ${height - 30})`);
+
+        // Create gradient for legend
+        const defs = svg.append('defs');
+        const gradient = defs.append('linearGradient')
+            .attr('id', 'distance-gradient')
+            .attr('x1', '0%')
+            .attr('x2', '100%');
+
+        gradient.append('stop')
+            .attr('offset', '0%')
+            .attr('style', 'stop-color:#3a3a3a;stop-opacity:1');
+
+        gradient.append('stop')
+            .attr('offset', '100%')
+            .attr('style', 'stop-color:#ff8c00;stop-opacity:1');
+
+        legend.append('rect')
+            .attr('width', 60)
+            .attr('height', 12)
+            .style('fill', 'url(#distance-gradient)');
+
+        legend.append('text')
+            .attr('x', 0)
+            .attr('y', 25)
+            .style('font-size', '10px')
+            .style('fill', '#cccccc')
+            .text('0 km');
+
+        legend.append('text')
+            .attr('x', 35)
+            .attr('y', 25)
+            .style('font-size', '10px')
+            .style('fill', '#cccccc')
+            .text(`${maxDistance.toFixed(0)} km`);
     }
 
     createDistanceDistributionChart(activities, selector) {

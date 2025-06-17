@@ -559,7 +559,7 @@ class RunningCharts {
             .padding(0.1);
 
         const yScale = d3.scaleLinear()
-            .domain([0, d3.max(binData, d => d.count)])
+            .domain([0, Math.max(40, d3.max(binData, d => d.count))])
             .nice()
             .range([height, 0]);
 
@@ -636,7 +636,7 @@ class RunningCharts {
         // Add legend
         const legend = g.append('g')
             .attr('class', 'legend')
-            .attr('transform', `translate(${width - 150}, 20)`);
+            .attr('transform', `translate(${width - 120}, 0)`);
 
         // Current target
         legend.append('rect')
@@ -1419,7 +1419,7 @@ class RunningCharts {
             .padding(0.1);
 
         const yScale = d3.scaleLinear()
-            .domain([0, d3.max(recentWeeks, d => d.totalLoad)])
+            .domain([0, Math.max(60, d3.max(recentWeeks, d => d.totalLoad))])
             .nice()
             .range([height, 0]);
 
@@ -1521,7 +1521,7 @@ class RunningCharts {
         // Add legend
         const legend = g.append('g')
             .attr('class', 'legend')
-            .attr('transform', `translate(${width - 120}, 20)`);
+            .attr('transform', `translate(${width - 120}, 0)`);
 
         const legendItems = [
             { key: 'hardLoad', label: 'Hard', color: loadColors.hardLoad },

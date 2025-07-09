@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2025-07-08T06:25:37.507Z",
-  "totalActivities": 189,
+  "lastUpdated": "2025-07-09T06:26:10.918Z",
+  "totalActivities": 190,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-07-08",
-    "totalDays": 188
+    "endDate": "2025-07-09",
+    "totalDays": 189
   },
   "activities": [
+    {
+      "id": 15046579743,
+      "date": "2025-07-08",
+      "distance": 9012.1,
+      "distanceMiles": "5.60",
+      "distanceKm": "9.01",
+      "movingTime": 2628,
+      "elapsedTime": 2641,
+      "totalElevationGain": 51,
+      "averageSpeed": 3.429,
+      "maxSpeed": 6.42,
+      "averagePaceMinMile": "7:49",
+      "averagePaceMinKm": "4:51",
+      "averageHeartrate": 153,
+      "maxHeartrate": 162,
+      "sufferScore": 75,
+      "kudosCount": 1,
+      "startLatLng": [
+        52.210839,
+        5.157233
+      ],
+      "endLatLng": [
+        52.211063,
+        5.157498
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g22239389",
+      "pacePerMile": 469.28571428571433,
+      "elevationPerMile": 29.879078571428572,
+      "speedMph": 7.671232876712328,
+      "weekday": "Tuesday",
+      "month": "July",
+      "year": 2025,
+      "quarterYear": 3,
+      "isWeekend": false,
+      "season": "Summer"
+    },
     {
       "id": 15033023929,
       "date": "2025-07-07",
@@ -7108,31 +7147,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "1077.27",
-    "totalTimeHours": "97.7",
-    "totalElevationGain": "5596",
-    "averageDistance": "5.70",
-    "averagePace": "5:25",
+    "totalDistance": "1086.28",
+    "totalTimeHours": "98.5",
+    "totalElevationGain": "5647",
+    "averageDistance": "5.72",
+    "averagePace": "5:24",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-07-07"
+      "end": "2025-07-08"
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 188,
-      "activeDays": 187,
-      "averageDistancePerRun": "5.70",
-      "totalRuns": 189,
+      "totalDays": 189,
+      "activeDays": 188,
+      "averageDistancePerRun": "5.72",
+      "totalRuns": 190,
       "longestRun": "13.01"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 189,
-      "totalDistance": "669.33",
-      "totalTimeHours": "97.7",
-      "totalElevationFeet": "18358",
-      "averageDistance": "3.54",
+      "totalRuns": 190,
+      "totalDistance": "674.93",
+      "totalTimeHours": "98.5",
+      "totalElevationFeet": "18525",
+      "averageDistance": "3.55",
       "averageTimeMinutes": "31",
       "longestRun": "8.08",
       "shortestRun": "0.80"
@@ -7141,7 +7180,7 @@
       "distanceTrend": "improving",
       "paceTrend": "improving",
       "recentAvgDistance": "5.61",
-      "recentAvgPace": "7:54",
+      "recentAvgPace": "7:52",
       "consistency": "Very High"
     },
     "performance": {
@@ -7166,12 +7205,12 @@
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 53,
-        "weekday": 136
+        "weekday": 137
       },
       "seasonalBreakdown": {
         "Summer": {
-          "count": 36,
-          "avgDistance": "5.22"
+          "count": 37,
+          "avgDistance": "5.23"
         },
         "Spring": {
           "count": 92,
@@ -7186,9 +7225,9 @@
     "summaries": {
       "monthly": {
         "2025-July": {
-          "runs": 7,
-          "distance": "39.23",
-          "time": "5.2"
+          "runs": 8,
+          "distance": "44.83",
+          "time": "6.0"
         },
         "2025-June": {
           "runs": 29,
@@ -7224,9 +7263,9 @@
       "weekly": [
         {
           "week": "2025-07-06",
-          "runs": 2,
-          "distance": "11.24",
-          "time": "1.5"
+          "runs": 3,
+          "distance": "16.84",
+          "time": "2.2"
         },
         {
           "week": "2025-06-29",
@@ -7297,5 +7336,5 @@
       ]
     }
   },
-  "processedAt": "2025-07-08T06:25:37.822Z"
+  "processedAt": "2025-07-09T06:26:11.291Z"
 }

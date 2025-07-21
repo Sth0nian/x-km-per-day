@@ -1,13 +1,46 @@
 {
-  "lastUpdated": "2025-07-20T06:24:19.501Z",
-  "totalActivities": 201,
+  "lastUpdated": "2025-07-21T06:27:22.238Z",
+  "totalActivities": 202,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-07-20",
-    "totalDays": 200
+    "endDate": "2025-07-21",
+    "totalDays": 201
   },
   "activities": [
+    {
+      "id": 15179966450,
+      "date": "2025-07-20",
+      "distance": 9036.6,
+      "distanceMiles": "5.62",
+      "distanceKm": "9.04",
+      "movingTime": 3236,
+      "elapsedTime": 3236,
+      "totalElevationGain": 0,
+      "averageSpeed": 2.793,
+      "maxSpeed": 3.52,
+      "averagePaceMinMile": "9:36",
+      "averagePaceMinKm": "5:58",
+      "averageHeartrate": 137.7,
+      "maxHeartrate": 148,
+      "sufferScore": 54,
+      "kudosCount": 0,
+      "startLatLng": [],
+      "endLatLng": [],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g22239389",
+      "pacePerMile": 575.8007117437722,
+      "elevationPerMile": 0,
+      "speedMph": 6.2521631644004945,
+      "weekday": "Sunday",
+      "month": "July",
+      "year": 2025,
+      "quarterYear": 3,
+      "isWeekend": true,
+      "season": "Summer"
+    },
     {
       "id": 15168779147,
       "date": "2025-07-19",
@@ -7564,31 +7597,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "1185.55",
-    "totalTimeHours": "107.1",
+    "totalDistance": "1194.59",
+    "totalTimeHours": "108.0",
     "totalElevationGain": "6494",
-    "averageDistance": "5.90",
+    "averageDistance": "5.91",
     "averagePace": "5:24",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-07-19"
+      "end": "2025-07-20"
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 200,
-      "activeDays": 199,
-      "averageDistancePerRun": "5.90",
-      "totalRuns": 201,
+      "totalDays": 201,
+      "activeDays": 200,
+      "averageDistancePerRun": "5.91",
+      "totalRuns": 202,
       "longestRun": "13.01"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 201,
-      "totalDistance": "736.63",
-      "totalTimeHours": "107.1",
+      "totalRuns": 202,
+      "totalDistance": "742.25",
+      "totalTimeHours": "108.0",
       "totalElevationFeet": "21306",
-      "averageDistance": "3.66",
+      "averageDistance": "3.67",
       "averageTimeMinutes": "32",
       "longestRun": "8.08",
       "shortestRun": "0.80"
@@ -7596,8 +7629,8 @@
     "trends": {
       "distanceTrend": "improving",
       "paceTrend": "improving",
-      "recentAvgDistance": "5.60",
-      "recentAvgPace": "8:40",
+      "recentAvgDistance": "5.61",
+      "recentAvgPace": "8:52",
       "consistency": "Very High"
     },
     "performance": {
@@ -7621,12 +7654,12 @@
       "favoriteDay": "Friday",
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
-        "weekend": 56,
+        "weekend": 57,
         "weekday": 145
       },
       "seasonalBreakdown": {
         "Summer": {
-          "count": 48,
+          "count": 49,
           "avgDistance": "5.32"
         },
         "Spring": {
@@ -7642,9 +7675,9 @@
     "summaries": {
       "monthly": {
         "2025-July": {
-          "runs": 19,
-          "distance": "106.53",
-          "time": "14.6"
+          "runs": 20,
+          "distance": "112.15",
+          "time": "15.5"
         },
         "2025-June": {
           "runs": 29,
@@ -7678,6 +7711,12 @@
         }
       },
       "weekly": [
+        {
+          "week": "2025-07-20",
+          "runs": 1,
+          "distance": "5.62",
+          "time": "0.9"
+        },
         {
           "week": "2025-07-13",
           "runs": 7,
@@ -7743,15 +7782,9 @@
           "runs": 7,
           "distance": "30.70",
           "time": "4.9"
-        },
-        {
-          "week": "2025-04-27",
-          "runs": 7,
-          "distance": "28.05",
-          "time": "3.8"
         }
       ]
     }
   },
-  "processedAt": "2025-07-20T06:24:19.853Z"
+  "processedAt": "2025-07-21T06:27:22.365Z"
 }

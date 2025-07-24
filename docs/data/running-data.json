@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2025-07-23T06:27:36.210Z",
-  "totalActivities": 203,
+  "lastUpdated": "2025-07-24T06:27:27.778Z",
+  "totalActivities": 204,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-07-23",
-    "totalDays": 203
+    "endDate": "2025-07-24",
+    "totalDays": 204
   },
   "activities": [
+    {
+      "id": 15215549953,
+      "date": "2025-07-23",
+      "distance": 9012,
+      "distanceMiles": "5.60",
+      "distanceKm": "9.01",
+      "movingTime": 3111,
+      "elapsedTime": 3115,
+      "totalElevationGain": 106,
+      "averageSpeed": 2.897,
+      "maxSpeed": 3.94,
+      "averagePaceMinMile": "9:15",
+      "averagePaceMinKm": "5:45",
+      "averageHeartrate": 149.5,
+      "maxHeartrate": 166,
+      "sufferScore": 96,
+      "kudosCount": 0,
+      "startLatLng": [
+        38.501367,
+        -0.244734
+      ],
+      "endLatLng": [
+        38.501268,
+        -0.244692
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g22239389",
+      "pacePerMile": 555.5357142857143,
+      "elevationPerMile": 62.10161428571429,
+      "speedMph": 6.4802314368370295,
+      "weekday": "Wednesday",
+      "month": "July",
+      "year": 2025,
+      "quarterYear": 3,
+      "isWeekend": false,
+      "season": "Summer"
+    },
     {
       "id": 15203846368,
       "date": "2025-07-22",
@@ -7636,31 +7675,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "1203.61",
-    "totalTimeHours": "108.8",
-    "totalElevationGain": "6620",
-    "averageDistance": "5.93",
+    "totalDistance": "1212.62",
+    "totalTimeHours": "109.7",
+    "totalElevationGain": "6726",
+    "averageDistance": "5.94",
     "averagePace": "5:24",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-07-22"
+      "end": "2025-07-23"
     },
     "activitiesPerWeek": "7.0",
     "yearToDateStats": {
-      "totalDays": 203,
-      "activeDays": 201,
-      "averageDistancePerRun": "5.93",
-      "totalRuns": 203,
+      "totalDays": 204,
+      "activeDays": 202,
+      "averageDistancePerRun": "5.94",
+      "totalRuns": 204,
       "longestRun": "13.01"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 203,
-      "totalDistance": "747.85",
-      "totalTimeHours": "108.8",
-      "totalElevationFeet": "21718",
-      "averageDistance": "3.68",
+      "totalRuns": 204,
+      "totalDistance": "753.45",
+      "totalTimeHours": "109.7",
+      "totalElevationFeet": "22066",
+      "averageDistance": "3.69",
       "averageTimeMinutes": "32",
       "longestRun": "8.08",
       "shortestRun": "0.80"
@@ -7669,7 +7708,7 @@
       "distanceTrend": "improving",
       "paceTrend": "improving",
       "recentAvgDistance": "5.60",
-      "recentAvgPace": "9:00",
+      "recentAvgPace": "9:08",
       "consistency": "Very High"
     },
     "performance": {
@@ -7690,15 +7729,15 @@
       }
     },
     "temporal": {
-      "favoriteDay": "Friday",
+      "favoriteDay": "Wednesday",
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 57,
-        "weekday": 146
+        "weekday": 147
       },
       "seasonalBreakdown": {
         "Summer": {
-          "count": 50,
+          "count": 51,
           "avgDistance": "5.33"
         },
         "Spring": {
@@ -7714,9 +7753,9 @@
     "summaries": {
       "monthly": {
         "2025-July": {
-          "runs": 21,
-          "distance": "117.75",
-          "time": "16.3"
+          "runs": 22,
+          "distance": "123.35",
+          "time": "17.2"
         },
         "2025-June": {
           "runs": 29,
@@ -7752,9 +7791,9 @@
       "weekly": [
         {
           "week": "2025-07-20",
-          "runs": 2,
-          "distance": "11.22",
-          "time": "1.8"
+          "runs": 3,
+          "distance": "16.82",
+          "time": "2.6"
         },
         {
           "week": "2025-07-13",
@@ -7825,5 +7864,5 @@
       ]
     }
   },
-  "processedAt": "2025-07-23T06:27:36.686Z"
+  "processedAt": "2025-07-24T06:27:28.294Z"
 }

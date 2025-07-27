@@ -1768,12 +1768,13 @@ class RunningCharts {
         const overrides = this.getGearOverrides();
         
         // Process activities with overrides
-        const processedActivities = activities.filter(d => d.gear).map(activity => {
+        const processedActivities = activities.map(activity => {
             const activityDate = activity.date;
             const overrideGear = overrides[activityDate];
             
             // If there's an override for this date, use it instead of the original gear
             if (overrideGear !== undefined) {
+                console.log(`Override applied for ${activityDate}: ${activity.gear} -> ${overrideGear}`);
                 return {
                     ...activity,
                     gear: overrideGear // This could be null or a different gear code

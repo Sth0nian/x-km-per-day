@@ -1674,6 +1674,12 @@ class RunningCharts {
         const gearData = this.groupActivitiesByGear(activities);
         console.log('Gear data:', gearData);
         
+        // Log override information
+        const overrides = this.getGearOverrides();
+        if (Object.keys(overrides).length > 0) {
+            console.log('Active overrides:', overrides);
+        }
+        
         if (gearData.length === 0) {
             d3.select(selector).append('div')
                 .style('text-align', 'center')
@@ -1759,9 +1765,26 @@ class RunningCharts {
     groupActivitiesByGear(activities) {
         // Load gear mapping
         const gearMapping = this.getGearMapping();
+        const overrides = this.getGearOverrides();
+        
+        // Process activities with overrides
+        const processedActivities = activities.filter(d => d.gear).map(activity => {
+            const activityDate = activity.date;
+            const overrideGear = overrides[activityDate];
+            
+            // If there's an override for this date, use it instead of the original gear
+            if (overrideGear !== undefined) {
+                return {
+                    ...activity,
+                    gear: overrideGear // This could be null or a different gear code
+                };
+            }
+            
+            return activity;
+        });
         
         const gearMap = d3.rollup(
-            activities.filter(d => d.gear), // Only include activities with gear data
+            processedActivities.filter(d => d.gear), // Only include activities with gear data
             v => ({
                 distance: d3.sum(v, d => parseFloat(d.distanceKm)),
                 count: v.length,
@@ -1790,5 +1813,10 @@ class RunningCharts {
     getGearMapping() {
         // This will be populated by the dashboard when it loads the gear mapping
         return window.gearMapping || {};
+    }
+
+    getGearOverrides() {
+        // This will be populated by the dashboard when it loads the gear mapping
+        return window.gearOverrides || {};
     }
 }

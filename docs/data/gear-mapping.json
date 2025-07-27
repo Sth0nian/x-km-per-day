@@ -23,10 +23,22 @@
       "type": "racing",
       "description": "Trail running shoes shoes",
       "color": "#9b59b6"
+    },
+    "asicsgt20009grey": {
+      "name": "Nike Juniper Trail",
+      "type": "racing",
+      "description": "Trail running shoes shoes",
+      "color": "#9b59b6"
     }
+  },
+  "overrides": {
+    "2025-01-01": "asicsgt20009grey",
+    "2025-01-02": "asicsgt20009grey",
+    "2025-01-15": null,
+    "2025-01-16": "g22239389"
   },
   "metadata": {
     "lastUpdated": "2025-01-20",
-    "instructions": "Add new gear codes here as you discover them. The gear code format is 'g' followed by numbers (e.g., g22239389)."
+    "instructions": "Add new gear codes here as you discover them. The gear code format is 'g' followed by numbers (e.g., g22239389). Overrides allow you to change the gear for specific dates - use null to exclude activities from gear tracking on that date."
   }
 } 

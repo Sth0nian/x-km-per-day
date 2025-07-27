@@ -53,10 +53,13 @@ class RunningDashboard {
             }
             const gearData = await response.json();
             window.gearMapping = gearData.gearMapping;
+            window.gearOverrides = gearData.overrides || {};
             console.log('Gear mapping loaded:', window.gearMapping);
+            console.log('Gear overrides loaded:', window.gearOverrides);
         } catch (error) {
             console.error('Error loading gear mapping:', error);
             window.gearMapping = {};
+            window.gearOverrides = {};
         }
     }
 

@@ -34,10 +34,29 @@ class RunningDashboard {
             }
             this.data = await response.json();
             console.log('Data loaded:', this.data);
+            
+            // Load gear mapping
+            await this.loadGearMapping();
         } catch (error) {
             console.error('Error loading data:', error);
             // Show sample data if real data fails to load
             this.data = this.getSampleData();
+        }
+    }
+
+    async loadGearMapping() {
+        try {
+            console.log('Loading gear mapping...');
+            const response = await fetch('data/gear-mapping.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const gearData = await response.json();
+            window.gearMapping = gearData.gearMapping;
+            console.log('Gear mapping loaded:', window.gearMapping);
+        } catch (error) {
+            console.error('Error loading gear mapping:', error);
+            window.gearMapping = {};
         }
     }
 
@@ -86,13 +105,19 @@ class RunningDashboard {
                 { selector: '#heartRateChart', method: 'createHeartRateChart' },
                 { selector: '#mapChart', method: 'createMapChart' },
                 { selector: '#prChart', method: 'createPersonalRecordsChart' },
-                { selector: '#trainingLoadChart', method: 'createTrainingLoadChart' }
+                { selector: '#trainingLoadChart', method: 'createTrainingLoadChart' },
+                { selector: '#gearChart', method: 'createGearChart' }
             ];
 
             chartElements.forEach(({ selector, method }) => {
                 const element = document.querySelector(selector);
                 if (element) {
-                    this.charts[method](this.data.activities, selector);
+                    console.log(`Creating chart: ${method} for ${selector}`);
+                    try {
+                        this.charts[method](this.data.activities, selector);
+                    } catch (error) {
+                        console.error(`Error creating chart ${method}:`, error);
+                    }
                 } else {
                     console.warn(`Element ${selector} not found, skipping chart`);
                 }

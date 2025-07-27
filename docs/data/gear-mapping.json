@@ -1,0 +1,32 @@
+{
+  "gearMapping": {
+    "g22239389": {
+      "name": "Nike Vomero 18",
+      "type": "road",
+      "description": "Daily training shoes",
+      "color": "#fc4c02"
+    },
+    "g22239396": {
+      "name": "Nike Pegasus Trail 5",
+      "type": "trail",
+      "description": "Trail running shoes",
+      "color": "#2ecc71"
+    },
+    "g22234834": {
+      "name": "Nike Vaporfly 3%",
+      "type": "racing",
+      "description": "Racing shoes",
+      "color": "#3498db"
+    },
+    "g22237578": {
+      "name": "Nike Juniper Trail",
+      "type": "racing",
+      "description": "Trail running shoes shoes",
+      "color": "#9b59b6"
+    }
+  },
+  "metadata": {
+    "lastUpdated": "2025-01-20",
+    "instructions": "Add new gear codes here as you discover them. The gear code format is 'g' followed by numbers (e.g., g22239389)."
+  }
+} 

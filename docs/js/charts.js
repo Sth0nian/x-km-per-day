@@ -1663,4 +1663,132 @@ class RunningCharts {
         const secs = Math.floor(seconds % 60);
         return `${minutes}:${secs.toString().padStart(2, '0')}`;
     }
+
+    createGearChart(activities, selector) {
+        console.log('createGearChart called with:', activities.length, 'activities');
+        
+        // Clear previous chart
+        d3.select(selector).selectAll('*').remove();
+
+        // Group activities by gear
+        const gearData = this.groupActivitiesByGear(activities);
+        console.log('Gear data:', gearData);
+        
+        if (gearData.length === 0) {
+            d3.select(selector).append('div')
+                .style('text-align', 'center')
+                .style('padding', '20px')
+                .style('color', '#666')
+                .text('No gear data available');
+            return;
+        }
+
+        const margin = { top: 20, right: 30, bottom: 80, left: 80 };
+        const container = d3.select(selector);
+        const containerWidth = container.node().getBoundingClientRect().width;
+        const width = containerWidth - margin.left - margin.right;
+        const height = 300 - margin.top - margin.bottom;
+
+        const svg = container
+            .append('svg')
+            .attr('width', containerWidth)
+            .attr('height', 300);
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleBand()
+            .domain(gearData.map(d => d.name))
+            .range([0, width])
+            .padding(0.2);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(gearData, d => d.distance)])
+            .nice()
+            .range([height, 0]);
+
+        // Axes
+        g.append('g')
+            .attr('class', 'axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(xScale))
+            .selectAll('text')
+            .style('text-anchor', 'end')
+            .attr('dx', '-.8em')
+            .attr('dy', '.15em')
+            .attr('transform', 'rotate(-45)')
+            .style('font-size', '10px');
+
+        g.append('g')
+            .attr('class', 'axis')
+            .call(d3.axisLeft(yScale));
+
+        // Bars
+        g.selectAll('.bar')
+            .data(gearData)
+            .enter().append('rect')
+            .attr('class', 'bar')
+            .attr('x', d => xScale(d.name))
+            .attr('width', xScale.bandwidth())
+            .attr('y', d => yScale(d.distance))
+            .attr('height', d => height - yScale(d.distance))
+            .attr('fill', d => d.color || this.colors.primary)
+            .on('mouseover', (event, d) => {
+                this.tooltip.transition().duration(200).style('opacity', .9);
+                this.tooltip.html(`${d.name}<br/>Distance: ${d.distance.toFixed(1)} km<br/>Runs: ${d.count}<br/>Avg Pace: ${this.secondsToPace(d.avgPace)}`)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', () => {
+                this.tooltip.transition().duration(500).style('opacity', 0);
+            });
+
+        // Y-axis label
+        g.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - margin.left)
+            .attr('x', 0 - (height / 2))
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', '#666')
+            .text('Distance (km)');
+    }
+
+    groupActivitiesByGear(activities) {
+        // Load gear mapping
+        const gearMapping = this.getGearMapping();
+        
+        const gearMap = d3.rollup(
+            activities.filter(d => d.gear), // Only include activities with gear data
+            v => ({
+                distance: d3.sum(v, d => parseFloat(d.distanceKm)),
+                count: v.length,
+                avgPace: d3.mean(v, d => this.paceToSeconds(d.averagePaceMinKm))
+            }),
+            d => d.gear
+        );
+
+        return Array.from(gearMap, ([gearCode, data]) => {
+            const gearInfo = gearMapping[gearCode] || {
+                name: `Unknown Gear (${gearCode})`,
+                color: this.colors.secondary
+            };
+            
+            return {
+                gearCode: gearCode,
+                name: gearInfo.name,
+                color: gearInfo.color,
+                distance: data.distance,
+                count: data.count,
+                avgPace: data.avgPace
+            };
+        }).sort((a, b) => b.distance - a.distance); // Sort by distance descending
+    }
+
+    getGearMapping() {
+        // This will be populated by the dashboard when it loads the gear mapping
+        return window.gearMapping || {};
+    }
 }

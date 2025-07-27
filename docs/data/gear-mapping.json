@@ -25,11 +25,11 @@
       "color": "#9b59b6"
     },
     "asicsgt20009grey": {
-      "name": "Nike Juniper Trail",
-      "type": "racing",
-      "description": "Trail running shoes shoes",
-      "color": "#9b59b6"
-    }
+        "name": "Asics GT-2000 9",
+        "type": "road",
+        "description": "Daily training shoes",
+        "color": "#808080"
+      }
   },
   "overrides": {
     "2025-01-01": "asicsgt20009grey",

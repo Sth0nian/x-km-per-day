@@ -1,6 +1,11 @@
 {
   "gearMapping": {
-    "g22239389": {
+    "g25617759": {
+      "name": "Nike Vomero 18 Plus",
+      "type": "road",
+      "description": "Daily training shoes #2",
+      "color": "#fcfc02"
+    },"g22239389": {
       "name": "Nike Vomero 18",
       "type": "road",
       "description": "Daily training shoes",

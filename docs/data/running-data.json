@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2025-10-31T06:25:34.381Z",
+  "lastUpdated": "2025-11-01T06:22:29.667Z",
   "totalActivities": 305,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-10-31",
-    "totalDays": 303
+    "endDate": "2025-11-01",
+    "totalDays": 304
   },
   "activities": [
     {
@@ -24,7 +24,7 @@
       "averageHeartrate": 170.2,
       "maxHeartrate": 179,
       "sufferScore": 215,
-      "kudosCount": 1,
+      "kudosCount": 3,
       "startLatLng": [
         52.213971,
         5.189588
@@ -11451,7 +11451,7 @@
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 303,
+      "totalDays": 304,
       "activeDays": 303,
       "averageDistancePerRun": "7.56",
       "totalRuns": 305,
@@ -11648,5 +11648,5 @@
       ]
     }
   },
-  "processedAt": "2025-10-31T06:25:34.732Z"
+  "processedAt": "2025-11-01T06:22:30.118Z"
 }

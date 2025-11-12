@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2025-11-11T06:26:40.536Z",
-  "totalActivities": 316,
+  "lastUpdated": "2025-11-12T06:26:30.862Z",
+  "totalActivities": 317,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-11-11",
-    "totalDays": 314
+    "endDate": "2025-11-12",
+    "totalDays": 315
   },
   "activities": [
+    {
+      "id": 16423772548,
+      "date": "2025-11-11",
+      "distance": 13045,
+      "distanceMiles": "8.11",
+      "distanceKm": "13.04",
+      "movingTime": 3850,
+      "elapsedTime": 3850,
+      "totalElevationGain": 80,
+      "averageSpeed": 3.388,
+      "maxSpeed": 5.16,
+      "averagePaceMinMile": "7:55",
+      "averagePaceMinKm": "4:55",
+      "averageHeartrate": 160.1,
+      "maxHeartrate": 170,
+      "sufferScore": 181,
+      "kudosCount": 0,
+      "startLatLng": [
+        52.211164,
+        5.157661
+      ],
+      "endLatLng": [
+        52.211053,
+        5.157475
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g25617759",
+      "pacePerMile": 474.72256473489523,
+      "elevationPerMile": 32.36340320591862,
+      "speedMph": 7.583376623376623,
+      "weekday": "Tuesday",
+      "month": "November",
+      "year": 2025,
+      "quarterYear": 4,
+      "isWeekend": false,
+      "season": "Fall"
+    },
     {
       "id": 16415866191,
       "date": "2025-11-10",
@@ -24,7 +63,7 @@
       "averageHeartrate": 160,
       "maxHeartrate": 171,
       "sufferScore": 173,
-      "kudosCount": 3,
+      "kudosCount": 4,
       "startLatLng": [
         52.213957,
         5.189574
@@ -63,7 +102,7 @@
       "averageHeartrate": 159.6,
       "maxHeartrate": 170,
       "sufferScore": 169,
-      "kudosCount": 1,
+      "kudosCount": 2,
       "startLatLng": [
         52.210832,
         5.15726
@@ -11833,31 +11872,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "2448.21",
-    "totalTimeHours": "215.2",
-    "totalElevationGain": "12838",
-    "averageDistance": "7.75",
+    "totalDistance": "2461.25",
+    "totalTimeHours": "216.3",
+    "totalElevationGain": "12918",
+    "averageDistance": "7.76",
     "averagePace": "5:17",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-11-10"
+      "end": "2025-11-11"
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 314,
-      "activeDays": 314,
-      "averageDistancePerRun": "7.75",
-      "totalRuns": 316,
+      "totalDays": 315,
+      "activeDays": 315,
+      "averageDistancePerRun": "7.76",
+      "totalRuns": 317,
       "longestRun": "13.19"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 316,
-      "totalDistance": "1521.21",
-      "totalTimeHours": "215.2",
-      "totalElevationFeet": "42118",
-      "averageDistance": "4.81",
+      "totalRuns": 317,
+      "totalDistance": "1529.32",
+      "totalTimeHours": "216.3",
+      "totalElevationFeet": "42381",
+      "averageDistance": "4.82",
       "averageTimeMinutes": "41",
       "longestRun": "8.20",
       "shortestRun": "0.80"
@@ -11866,14 +11905,14 @@
       "distanceTrend": "improving",
       "paceTrend": "improving",
       "recentAvgDistance": "8.10",
-      "recentAvgPace": "7:57",
+      "recentAvgPace": "8:00",
       "consistency": "Very High"
     },
     "performance": {
       "bestPace": "6:21",
       "worstPace": "12:45",
       "paceVariability": "51 sec",
-      "distanceVariability": "1.87 mi",
+      "distanceVariability": "1.88 mi",
       "personalRecords": {
         "longestRun": {
           "distance": "8.20",
@@ -11891,12 +11930,12 @@
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 90,
-        "weekday": 226
+        "weekday": 227
       },
       "seasonalBreakdown": {
         "Fall": {
-          "count": 71,
-          "avgDistance": "7.31"
+          "count": 72,
+          "avgDistance": "7.32"
         },
         "Summer": {
           "count": 92,
@@ -11915,9 +11954,9 @@
     "summaries": {
       "monthly": {
         "2025-November": {
-          "runs": 10,
-          "distance": "81.13",
-          "time": "10.8"
+          "runs": 11,
+          "distance": "89.24",
+          "time": "11.9"
         },
         "2025-October": {
           "runs": 31,
@@ -11973,9 +12012,9 @@
       "weekly": [
         {
           "week": "2025-11-09",
-          "runs": 2,
-          "distance": "16.21",
-          "time": "2.1"
+          "runs": 3,
+          "distance": "24.32",
+          "time": "3.2"
         },
         {
           "week": "2025-11-02",
@@ -12046,5 +12085,5 @@
       ]
     }
   },
-  "processedAt": "2025-11-11T06:26:40.667Z"
+  "processedAt": "2025-11-12T06:26:30.987Z"
 }

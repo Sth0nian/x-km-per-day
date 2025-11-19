@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2025-11-18T06:25:52.806Z",
-  "totalActivities": 323,
+  "lastUpdated": "2025-11-19T06:25:39.724Z",
+  "totalActivities": 324,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-11-18",
-    "totalDays": 321
+    "endDate": "2025-11-19",
+    "totalDays": 322
   },
   "activities": [
+    {
+      "id": 16493803565,
+      "date": "2025-11-18",
+      "distance": 13034.6,
+      "distanceMiles": "8.10",
+      "distanceKm": "13.03",
+      "movingTime": 3812,
+      "elapsedTime": 3824,
+      "totalElevationGain": 92.2,
+      "averageSpeed": 3.419,
+      "maxSpeed": 5.44,
+      "averagePaceMinMile": "7:50",
+      "averagePaceMinKm": "4:52",
+      "averageHeartrate": 158.2,
+      "maxHeartrate": 171,
+      "sufferScore": 159,
+      "kudosCount": 0,
+      "startLatLng": [
+        52.210831,
+        5.157211
+      ],
+      "endLatLng": [
+        52.210077,
+        5.156255
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g25617759",
+      "pacePerMile": 470.6172839506173,
+      "elevationPerMile": 37.34487012345679,
+      "speedMph": 7.649527806925499,
+      "weekday": "Tuesday",
+      "month": "November",
+      "year": 2025,
+      "quarterYear": 4,
+      "isWeekend": false,
+      "season": "Fall"
+    },
     {
       "id": 16491408220,
       "date": "2025-11-17",
@@ -12079,31 +12118,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "2539.97",
-    "totalTimeHours": "222.9",
-    "totalElevationGain": "13068",
-    "averageDistance": "7.86",
+    "totalDistance": "2553.00",
+    "totalTimeHours": "223.9",
+    "totalElevationGain": "13160",
+    "averageDistance": "7.88",
     "averagePace": "5:17",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-11-17"
+      "end": "2025-11-18"
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 321,
-      "activeDays": 321,
-      "averageDistancePerRun": "7.86",
-      "totalRuns": 323,
+      "totalDays": 322,
+      "activeDays": 322,
+      "averageDistancePerRun": "7.88",
+      "totalRuns": 324,
       "longestRun": "13.59"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 323,
-      "totalDistance": "1578.24",
-      "totalTimeHours": "222.9",
-      "totalElevationFeet": "42874",
-      "averageDistance": "4.89",
+      "totalRuns": 324,
+      "totalDistance": "1586.34",
+      "totalTimeHours": "223.9",
+      "totalElevationFeet": "43177",
+      "averageDistance": "4.90",
       "averageTimeMinutes": "41",
       "longestRun": "8.44",
       "shortestRun": "0.80"
@@ -12112,7 +12151,7 @@
       "distanceTrend": "improving",
       "paceTrend": "improving",
       "recentAvgDistance": "8.10",
-      "recentAvgPace": "8:12",
+      "recentAvgPace": "8:08",
       "consistency": "Very High"
     },
     "performance": {
@@ -12137,12 +12176,12 @@
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 92,
-        "weekday": 231
+        "weekday": 232
       },
       "seasonalBreakdown": {
         "Fall": {
-          "count": 78,
-          "avgDistance": "7.38"
+          "count": 79,
+          "avgDistance": "7.39"
         },
         "Summer": {
           "count": 92,
@@ -12161,9 +12200,9 @@
     "summaries": {
       "monthly": {
         "2025-November": {
-          "runs": 17,
-          "distance": "138.16",
-          "time": "18.5"
+          "runs": 18,
+          "distance": "146.26",
+          "time": "19.6"
         },
         "2025-October": {
           "runs": 31,
@@ -12219,9 +12258,9 @@
       "weekly": [
         {
           "week": "2025-11-16",
-          "runs": 2,
-          "distance": "16.19",
-          "time": "2.2"
+          "runs": 3,
+          "distance": "24.29",
+          "time": "3.2"
         },
         {
           "week": "2025-11-09",
@@ -12292,5 +12331,5 @@
       ]
     }
   },
-  "processedAt": "2025-11-18T06:25:52.939Z"
+  "processedAt": "2025-11-19T06:25:39.856Z"
 }

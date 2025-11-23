@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2025-11-22T06:23:14.152Z",
+  "lastUpdated": "2025-11-23T06:24:11.588Z",
   "totalActivities": 327,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-11-22",
-    "totalDays": 325
+    "endDate": "2025-11-23",
+    "totalDays": 326
   },
   "activities": [
     {
@@ -12228,7 +12228,7 @@
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 325,
+      "totalDays": 326,
       "activeDays": 325,
       "averageDistancePerRun": "7.93",
       "totalRuns": 327,
@@ -12430,5 +12430,5 @@
       ]
     }
   },
-  "processedAt": "2025-11-22T06:23:14.285Z"
+  "processedAt": "2025-11-23T06:24:11.721Z"
 }

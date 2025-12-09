@@ -1,13 +1,46 @@
 {
-  "lastUpdated": "2025-12-08T06:30:28.199Z",
-  "totalActivities": 343,
+  "lastUpdated": "2025-12-09T06:28:15.452Z",
+  "totalActivities": 344,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
-    "endDate": "2025-12-08",
-    "totalDays": 341
+    "endDate": "2025-12-09",
+    "totalDays": 342
   },
   "activities": [
+    {
+      "id": 16689229494,
+      "date": "2025-12-08",
+      "distance": 14016.9,
+      "distanceMiles": "8.71",
+      "distanceKm": "14.02",
+      "movingTime": 4502,
+      "elapsedTime": 4502,
+      "totalElevationGain": 0,
+      "averageSpeed": 3.113,
+      "maxSpeed": 3.76,
+      "averagePaceMinMile": "8:36",
+      "averagePaceMinKm": "5:21",
+      "averageHeartrate": 165.2,
+      "maxHeartrate": 174,
+      "sufferScore": 256,
+      "kudosCount": 0,
+      "startLatLng": [],
+      "endLatLng": [],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g25617759",
+      "pacePerMile": 516.8771526980481,
+      "elevationPerMile": 0,
+      "speedMph": 6.9649044868947145,
+      "weekday": "Monday",
+      "month": "December",
+      "year": 2025,
+      "quarterYear": 4,
+      "isWeekend": false,
+      "season": "Winter"
+    },
     {
       "id": 16679142686,
       "date": "2025-12-07",
@@ -24,7 +57,7 @@
       "averageHeartrate": 151.9,
       "maxHeartrate": 162,
       "sufferScore": 147,
-      "kudosCount": 1,
+      "kudosCount": 2,
       "startLatLng": [],
       "endLatLng": [],
       "city": null,
@@ -12769,31 +12802,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "2807.82",
-    "totalTimeHours": "245.7",
+    "totalDistance": "2821.84",
+    "totalTimeHours": "246.9",
     "totalElevationGain": "13408",
-    "averageDistance": "8.19",
+    "averageDistance": "8.20",
     "averagePace": "5:16",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-12-07"
+      "end": "2025-12-08"
     },
     "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 341,
-      "activeDays": 341,
-      "averageDistancePerRun": "8.19",
-      "totalRuns": 343,
+      "totalDays": 342,
+      "activeDays": 342,
+      "averageDistancePerRun": "8.20",
+      "totalRuns": 344,
       "longestRun": "14.06"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 343,
-      "totalDistance": "1744.66",
-      "totalTimeHours": "245.7",
+      "totalRuns": 344,
+      "totalDistance": "1753.37",
+      "totalTimeHours": "246.9",
       "totalElevationFeet": "43988",
-      "averageDistance": "5.09",
+      "averageDistance": "5.10",
       "averageTimeMinutes": "43",
       "longestRun": "8.73",
       "shortestRun": "0.80"
@@ -12802,7 +12835,7 @@
       "distanceTrend": "improving",
       "paceTrend": "improving",
       "recentAvgDistance": "8.71",
-      "recentAvgPace": "8:35",
+      "recentAvgPace": "8:44",
       "consistency": "Very High"
     },
     "performance": {
@@ -12823,16 +12856,16 @@
       }
     },
     "temporal": {
-      "favoriteDay": "Friday",
+      "favoriteDay": "Monday",
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 98,
-        "weekday": 245
+        "weekday": 246
       },
       "seasonalBreakdown": {
         "Winter": {
-          "count": 68,
-          "avgDistance": "2.87"
+          "count": 69,
+          "avgDistance": "2.96"
         },
         "Fall": {
           "count": 91,
@@ -12851,9 +12884,9 @@
     "summaries": {
       "monthly": {
         "2025-December": {
-          "runs": 7,
-          "distance": "61.00",
-          "time": "8.6"
+          "runs": 8,
+          "distance": "69.71",
+          "time": "9.8"
         },
         "2025-November": {
           "runs": 30,
@@ -12914,9 +12947,9 @@
       "weekly": [
         {
           "week": "2025-12-07",
-          "runs": 1,
-          "distance": "8.71",
-          "time": "1.2"
+          "runs": 2,
+          "distance": "17.42",
+          "time": "2.5"
         },
         {
           "week": "2025-11-30",
@@ -12987,5 +13020,5 @@
       ]
     }
   },
-  "processedAt": "2025-12-08T06:30:28.336Z"
+  "processedAt": "2025-12-09T06:28:15.588Z"
 }

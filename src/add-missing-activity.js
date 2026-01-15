@@ -4,6 +4,121 @@ const path = require('path');
 class ActivityAdder {
     constructor() {
         this.dataDir = path.join(__dirname, '..', 'docs', 'data');
+        this.clientId = process.env.STRAVA_CLIENT_ID;
+        this.clientSecret = process.env.STRAVA_CLIENT_SECRET;
+        this.refreshToken = process.env.STRAVA_REFRESH_TOKEN;
+        this.baseUrl = 'https://www.strava.com/api/v3';
+        this.accessToken = null;
+    }
+
+    async refreshAccessToken() {
+        if (!this.clientId || !this.clientSecret || !this.refreshToken) {
+            console.log('ℹ️  Strava credentials not available. Will use manual input.');
+            return false;
+        }
+
+        try {
+            console.log('🔄 Refreshing Strava access token...');
+            const response = await fetch('https://www.strava.com/oauth/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    client_id: this.clientId,
+                    client_secret: this.clientSecret,
+                    refresh_token: this.refreshToken,
+                    grant_type: 'refresh_token'
+                })
+            });
+
+            if (!response.ok) {
+                console.log('⚠️  Failed to refresh Strava token');
+                return false;
+            }
+
+            const data = await response.json();
+            this.accessToken = data.access_token;
+            console.log('✓ Strava access token refreshed');
+            return true;
+        } catch (error) {
+            console.log('⚠️  Error refreshing Strava token:', error.message);
+            return false;
+        }
+    }
+
+    async fetchActivityFromStrava(date) {
+        if (!this.accessToken) {
+            console.log('ℹ️  No Strava token available');
+            return null;
+        }
+
+        try {
+            console.log(`🔍 Searching Strava for activities on ${date}...`);
+
+            // Create date range (midnight to midnight)
+            const startDate = new Date(date + 'T00:00:00Z');
+            const endDate = new Date(date + 'T23:59:59Z');
+            const startTimestamp = Math.floor(startDate.getTime() / 1000);
+            const endTimestamp = Math.floor(endDate.getTime() / 1000);
+
+            const response = await fetch(
+                `${this.baseUrl}/athlete/activities?before=${endTimestamp}&after=${startTimestamp}&per_page=30`,
+                {
+                    headers: { 'Authorization': `Bearer ${this.accessToken}` }
+                }
+            );
+
+            if (!response.ok) {
+                console.log(`⚠️  Strava API error: ${response.status}`);
+                return null;
+            }
+
+            const activities = await response.json();
+
+            // Filter for running activities
+            const runningActivities = activities.filter(a => a.sport_type === 'Run');
+
+            if (runningActivities.length === 0) {
+                console.log(`ℹ️  No running activities found on ${date}`);
+                return null;
+            }
+
+            if (runningActivities.length > 1) {
+                console.log(`⚠️  Multiple running activities found on ${date}, using first one`);
+            }
+
+            const activity = runningActivities[0];
+            console.log(`✓ Found activity: ${activity.name}`);
+            return activity;
+        } catch (error) {
+            console.log('⚠️  Error fetching from Strava:', error.message);
+            return null;
+        }
+    }
+
+    processStravaActivity(stravaActivity) {
+        const distanceKm = stravaActivity.distance / 1000;
+        const movingTime = stravaActivity.moving_time;
+
+        return {
+            date: stravaActivity.start_date.split('T')[0],
+            distanceKm: distanceKm.toFixed(2),
+            distanceMiles: (distanceKm * 0.621371).toFixed(2),
+            movingTime: movingTime,
+            elapsedTime: stravaActivity.elapsed_time,
+            totalElevationGain: stravaActivity.total_elevation_gain || 0,
+            averageSpeed: stravaActivity.average_speed,
+            maxSpeed: stravaActivity.max_speed,
+            averageHeartrate: stravaActivity.average_heartrate || 0,
+            maxHeartrate: stravaActivity.max_heartrate || 0,
+            sufferScore: stravaActivity.suffer_score || 0,
+            kudosCount: stravaActivity.kudos_count || 0,
+            startLatLng: stravaActivity.start_latlng || [],
+            endLatLng: stravaActivity.end_latlng || [],
+            city: stravaActivity.location_city || null,
+            state: stravaActivity.location_state || null,
+            country: stravaActivity.location_country || null,
+            gear: stravaActivity.gear_id || null
+        };
     }
 
     async addActivity(year, activityData) {
@@ -176,24 +291,55 @@ class ActivityAdder {
 
 // Main execution
 const year = process.env.ACTIVITY_YEAR;
-const activityData = {
-    date: process.env.ACTIVITY_DATE,
-    distanceKm: process.env.ACTIVITY_DISTANCE,
-    movingTime: process.env.ACTIVITY_TIME,
-    totalElevationGain: process.env.ACTIVITY_ELEVATION || 0,
-    averageHeartrate: process.env.ACTIVITY_HR || 0,
-    maxHeartrate: process.env.ACTIVITY_MAX_HR || 0
-};
+const date = process.env.ACTIVITY_DATE;
 
-if (!year || !activityData.date || !activityData.distanceKm || !activityData.movingTime) {
-    console.error('Missing required environment variables:');
-    console.error('  ACTIVITY_YEAR, ACTIVITY_DATE, ACTIVITY_DISTANCE, ACTIVITY_TIME');
+if (!year || !date) {
+    console.error('Missing required environment variables: ACTIVITY_YEAR, ACTIVITY_DATE');
     process.exit(1);
 }
 
 const adder = new ActivityAdder();
-adder.addActivity(parseInt(year), activityData)
-    .catch(error => {
+
+(async () => {
+    try {
+        let activityData = null;
+
+        // Try to fetch from Strava first
+        const hasToken = await adder.refreshAccessToken();
+        if (hasToken) {
+            const stravaActivity = await adder.fetchActivityFromStrava(date);
+            if (stravaActivity) {
+                activityData = adder.processStravaActivity(stravaActivity);
+                console.log(`\n✓ Using data from Strava:`);
+                console.log(`  Distance: ${activityData.distanceKm} km`);
+                console.log(`  Time: ${activityData.movingTime} seconds`);
+                console.log(`  HR: ${activityData.averageHeartrate} bpm`);
+            }
+        }
+
+        // Fall back to manual input if Strava fetch failed
+        if (!activityData) {
+            console.log('\n📝 Using manual input values');
+            if (!process.env.ACTIVITY_DISTANCE || !process.env.ACTIVITY_TIME) {
+                console.error('Error: Strava fetch failed and manual input incomplete');
+                console.error('Required: ACTIVITY_DISTANCE, ACTIVITY_TIME');
+                process.exit(1);
+            }
+
+            activityData = {
+                date: date,
+                distanceKm: process.env.ACTIVITY_DISTANCE,
+                movingTime: process.env.ACTIVITY_TIME,
+                totalElevationGain: process.env.ACTIVITY_ELEVATION || 0,
+                averageHeartrate: process.env.ACTIVITY_HR || 0,
+                maxHeartrate: process.env.ACTIVITY_MAX_HR || 0
+            };
+        }
+
+        // Add the activity to the year file
+        await adder.addActivity(parseInt(year), activityData);
+    } catch (error) {
         console.error('Failed to add activity:', error);
         process.exit(1);
-    });
+    }
+})();

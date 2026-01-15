@@ -1,0 +1,89 @@
+name: Add Missing Activity
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Year (e.g., 2025)'
+        required: true
+        type: string
+      date:
+        description: 'Activity date (YYYY-MM-DD)'
+        required: true
+        type: string
+      distance_km:
+        description: 'Distance in kilometers'
+        required: true
+        type: string
+      moving_time_seconds:
+        description: 'Moving time in seconds'
+        required: true
+        type: string
+      elevation_gain:
+        description: 'Elevation gain in meters (optional)'
+        required: false
+        type: string
+        default: '0'
+      average_hr:
+        description: 'Average heart rate (optional)'
+        required: false
+        type: string
+        default: '0'
+      max_hr:
+        description: 'Max heart rate (optional)'
+        required: false
+        type: string
+        default: '0'
+
+permissions:
+  contents: write
+
+jobs:
+  add-activity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Validate inputs
+        run: |
+          echo "Year: ${{ github.event.inputs.year }}"
+          echo "Date: ${{ github.event.inputs.date }}"
+          echo "Distance: ${{ github.event.inputs.distance_km }} km"
+          echo "Moving time: ${{ github.event.inputs.moving_time_seconds }} seconds"
+
+          # Simple date validation
+          if ! [[ ${{ github.event.inputs.date }} =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "❌ Invalid date format. Use YYYY-MM-DD"
+            exit 1
+          fi
+
+          echo "✓ All inputs validated"
+
+      - name: Add activity to year file
+        env:
+          ACTIVITY_YEAR: ${{ github.event.inputs.year }}
+          ACTIVITY_DATE: ${{ github.event.inputs.date }}
+          ACTIVITY_DISTANCE: ${{ github.event.inputs.distance_km }}
+          ACTIVITY_TIME: ${{ github.event.inputs.moving_time_seconds }}
+          ACTIVITY_ELEVATION: ${{ github.event.inputs.elevation_gain }}
+          ACTIVITY_HR: ${{ github.event.inputs.average_hr }}
+          ACTIVITY_MAX_HR: ${{ github.event.inputs.max_hr }}
+        run: node src/add-missing-activity.js
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          YEAR=${{ github.event.inputs.year }}
+          git add docs/data/running-data-${YEAR}.json
+          git diff --staged --quiet || git commit -m "Add missing activity for ${{ github.event.inputs.date }}"
+          git push || echo "No changes to push"

@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2025-12-31T06:29:33.135Z",
-  "totalActivities": 367,
+  "lastUpdated": "2026-01-15T10:41:36.311Z",
+  "totalActivities": 368,
   "yearToDate": 2025,
   "dataRange": {
     "startDate": "2025-01-01",
@@ -8,6 +8,39 @@
     "totalDays": 364
   },
   "activities": [
+    {
+      "id": 9289134659,
+      "date": "2025-12-31",
+      "distance": 14020,
+      "distanceMiles": "8.71",
+      "distanceKm": "14.02",
+      "movingTime": 5857,
+      "elapsedTime": 5857,
+      "totalElevationGain": 240,
+      "averageSpeed": 2.393202498925936,
+      "maxSpeed": 2.871842998711123,
+      "averagePaceMinMile": "11:12",
+      "averagePaceMinKm": "6:58",
+      "averageHeartrate": 132,
+      "maxHeartrate": 156,
+      "sufferScore": 66,
+      "kudosCount": 0,
+      "startLatLng": [],
+      "endLatLng": [],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": null,
+      "pacePerMile": 40346.7278989667,
+      "elevationPerMile": 27.554535017221582,
+      "speedMph": 5.35359399009732,
+      "weekday": "Wednesday",
+      "month": "December",
+      "year": 2025,
+      "quarterYear": 4,
+      "isWeekend": false,
+      "season": "Winter"
+    },
     {
       "id": 16882229103,
       "date": "2025-12-30",
@@ -13627,21 +13660,21 @@
     }
   ],
   "summary": {
-    "totalDistance": "3138.31",
-    "totalTimeHours": "276.8",
-    "totalElevationGain": "14605",
-    "averageDistance": "8.55",
-    "averagePace": "5:17",
+    "totalDistance": "3152.33",
+    "totalTimeHours": "278.4",
+    "totalElevationGain": "14845",
+    "averageDistance": "8.57",
+    "averagePace": "3:14",
+    "activitiesPerWeek": "7.1",
     "dateRange": {
       "start": "2025-01-01",
-      "end": "2025-12-30"
+      "end": "2025-12-31"
     },
-    "activitiesPerWeek": "7.1",
     "yearToDateStats": {
-      "totalDays": 364,
-      "activeDays": 364,
-      "averageDistancePerRun": "8.55",
-      "totalRuns": 367,
+      "totalDays": 365,
+      "activeDays": 368,
+      "averageDistancePerRun": "8.57",
+      "totalRuns": 368,
       "longestRun": "15.03"
     }
   },

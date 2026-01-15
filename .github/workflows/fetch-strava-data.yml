@@ -48,6 +48,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add docs/data/running-data.json
+          YEAR=$(date '+%Y')
+          git add docs/data/running-data-${YEAR}.json
           git diff --staged --quiet || git commit -m "Update running data $(date '+%Y-%m-%d %H:%M:%S')"
           git push || echo "No changes to push"

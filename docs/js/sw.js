@@ -1,11 +1,10 @@
-const CACHE_NAME = 'running-dashboard-v1.0.0';
+const CACHE_NAME = 'running-dashboard-v1.1.0';
 const urlsToCache = [
   '/',
   '/index.html',
   '/css/style.css',
   '/js/dashboard.js',
   '/js/charts.js',
-  '/data/running-data.json',
   '/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
@@ -151,10 +150,12 @@ self.addEventListener('notificationclick', event => {
 // Function to update running data in background
 async function updateRunningData() {
   try {
-    const response = await fetch('/data/running-data.json');
+    const currentYear = new Date().getFullYear();
+    const dataUrl = `/data/running-data-${currentYear}.json`;
+    const response = await fetch(dataUrl);
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
-      await cache.put('/data/running-data.json', response);
+      await cache.put(dataUrl, response);
       console.log('Service Worker: Running data updated');
     }
   } catch (error) {

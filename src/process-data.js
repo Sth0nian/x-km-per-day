@@ -3,7 +3,8 @@ const path = require('path');
 
 class DataProcessor {
     constructor() {
-        this.dataPath = path.join(__dirname, '..', 'docs', 'data', 'running-data.json');
+        const currentYear = new Date().getFullYear();
+        this.dataPath = path.join(__dirname, '..', 'docs', 'data', `running-data-${currentYear}.json`);
     }
 
     async processData() {

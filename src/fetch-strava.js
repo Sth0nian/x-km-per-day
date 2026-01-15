@@ -231,7 +231,8 @@ class StravaDataFetcher {
             };
 
             // Save processed data
-            const outputPath = path.join(dataDir, 'running-data.json');
+            const currentYear = new Date().getFullYear();
+            const outputPath = path.join(dataDir, `running-data-${currentYear}.json`);
 
             await fs.writeFile(outputPath, JSON.stringify(outputData, null, 2));
             console.log(`Data saved to ${outputPath}`);

@@ -1,7 +1,8 @@
 class RunningDashboard {
     constructor() {
         this.data = null;
-        
+        this.currentYear = new Date().getFullYear();
+
         // Check if RunningCharts is available
         if (typeof RunningCharts === 'undefined') {
             console.error('RunningCharts class not found. Make sure charts.js is loaded before dashboard.js');
@@ -9,13 +10,14 @@ class RunningDashboard {
         } else {
             this.charts = new RunningCharts();
         }
-        
+
         this.init();
     }
 
     async init() {
         try {
-            await this.loadData();
+            await this.loadData(this.currentYear);
+            this.initializeYearSelector();
             this.renderSummaryCards();
             this.renderCharts();
             this.renderActivitiesTable();
@@ -26,19 +28,21 @@ class RunningDashboard {
         }
     }
 
-    async loadData() {
+    async loadData(year) {
         try {
-            const response = await fetch('data/running-data.json');
+            const dataFile = `data/running-data-${year}.json`;
+            const response = await fetch(dataFile);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             this.data = await response.json();
-            console.log('Data loaded:', this.data);
-            
+            this.currentYear = year;
+            console.log(`Data loaded for year ${year}:`, this.data);
+
             // Load gear mapping
             await this.loadGearMapping();
         } catch (error) {
-            console.error('Error loading data:', error);
+            console.error(`Error loading data for year ${year}:`, error);
             // Show sample data if real data fails to load
             this.data = this.getSampleData();
         }
@@ -186,6 +190,44 @@ class RunningDashboard {
             const rangeInfo = this.data.dataRange ? ` • ${this.data.dataRange.startDate} to ${this.data.dataRange.endDate}` : '';
             lastUpdatedElement.textContent = `Last updated: ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}${yearInfo}${rangeInfo}`;
         }
+    }
+
+    async initializeYearSelector() {
+        const yearSelector = document.getElementById('yearSelector');
+        if (!yearSelector) return;
+
+        const availableYears = await this.getAvailableYears();
+        yearSelector.innerHTML = availableYears.map(year => `
+            <option value="${year}" ${year === this.currentYear ? 'selected' : ''}>${year}</option>
+        `).join('');
+
+        yearSelector.addEventListener('change', async (e) => {
+            const selectedYear = parseInt(e.target.value);
+            await this.loadData(selectedYear);
+            this.renderSummaryCards();
+            this.renderCharts();
+            this.renderActivitiesTable();
+            this.updateLastUpdated();
+        });
+    }
+
+    async getAvailableYears() {
+        const years = [];
+        const currentYear = new Date().getFullYear();
+
+        // Check files from previous years up to current year
+        for (let year = 2025; year <= currentYear; year++) {
+            try {
+                const response = await fetch(`data/running-data-${year}.json`, { method: 'HEAD' });
+                if (response.ok) {
+                    years.push(year);
+                }
+            } catch (error) {
+                console.log(`running-data-${year}.json not found`);
+            }
+        }
+
+        return years.sort((a, b) => b - a); // Return in descending order
     }
 
     formatDate(dateString) {

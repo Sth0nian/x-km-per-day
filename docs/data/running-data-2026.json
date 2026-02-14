@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2026-02-13T06:56:10.881Z",
-  "totalActivities": 19,
+  "lastUpdated": "2026-02-14T06:40:20.741Z",
+  "totalActivities": 20,
   "yearToDate": 2026,
   "dataRange": {
     "startDate": "2026-01-01",
-    "endDate": "2026-02-13",
-    "totalDays": 43
+    "endDate": "2026-02-14",
+    "totalDays": 44
   },
   "activities": [
+    {
+      "id": 17385723357,
+      "date": "2026-02-13",
+      "distance": 20022.4,
+      "distanceMiles": "12.44",
+      "distanceKm": "20.02",
+      "movingTime": 6141,
+      "elapsedTime": 6171,
+      "totalElevationGain": 104,
+      "averageSpeed": 3.26,
+      "maxSpeed": 5.8,
+      "averagePaceMinMile": "8:13",
+      "averagePaceMinKm": "5:06",
+      "averageHeartrate": 173.1,
+      "maxHeartrate": 179,
+      "sufferScore": 417,
+      "kudosCount": 0,
+      "startLatLng": [
+        52.211169,
+        5.157609
+      ],
+      "endLatLng": [
+        52.249942,
+        5.340741
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g25617759",
+      "pacePerMile": 493.6495176848875,
+      "elevationPerMile": 27.428244372990353,
+      "speedMph": 7.292623351245726,
+      "weekday": "Friday",
+      "month": "February",
+      "year": 2026,
+      "quarterYear": 1,
+      "isWeekend": false,
+      "season": "Winter"
+    },
     {
       "id": 17359862926,
       "date": "2026-02-11",
@@ -57,7 +96,7 @@
       "averageHeartrate": 146.1,
       "maxHeartrate": 149,
       "sufferScore": 47,
-      "kudosCount": 1,
+      "kudosCount": 2,
       "startLatLng": [
         52.211298,
         5.157456
@@ -697,51 +736,51 @@
     }
   ],
   "summary": {
-    "totalDistance": "162.08",
-    "totalTimeHours": "15.2",
-    "totalElevationGain": "468",
-    "averageDistance": "8.53",
-    "averagePace": "5:35",
+    "totalDistance": "182.10",
+    "totalTimeHours": "16.9",
+    "totalElevationGain": "572",
+    "averageDistance": "9.11",
+    "averagePace": "5:34",
     "dateRange": {
       "start": "2026-01-05",
-      "end": "2026-02-11"
+      "end": "2026-02-13"
     },
     "activitiesPerWeek": "3.6",
     "yearToDateStats": {
-      "totalDays": 43,
-      "activeDays": 19,
-      "averageDistancePerRun": "8.53",
-      "totalRuns": 19,
-      "longestRun": "18.92"
+      "totalDays": 44,
+      "activeDays": 20,
+      "averageDistancePerRun": "9.11",
+      "totalRuns": 20,
+      "longestRun": "20.02"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 19,
-      "totalDistance": "100.71",
-      "totalTimeHours": "15.2",
-      "totalElevationFeet": "1534",
-      "averageDistance": "5.30",
-      "averageTimeMinutes": "48",
-      "longestRun": "11.76",
+      "totalRuns": 20,
+      "totalDistance": "113.15",
+      "totalTimeHours": "16.9",
+      "totalElevationFeet": "1876",
+      "averageDistance": "5.66",
+      "averageTimeMinutes": "51",
+      "longestRun": "12.44",
       "shortestRun": "0.46"
     },
     "trends": {
       "distanceTrend": "improving",
       "paceTrend": "declining",
-      "recentAvgDistance": "5.79",
-      "recentAvgPace": "9:45",
+      "recentAvgDistance": "7.82",
+      "recentAvgPace": "9:12",
       "consistency": "High"
     },
     "performance": {
       "bestPace": "7:19",
       "worstPace": "12:17",
-      "paceVariability": "91 sec",
-      "distanceVariability": "2.78 mi",
+      "paceVariability": "90 sec",
+      "distanceVariability": "3.13 mi",
       "personalRecords": {
         "longestRun": {
-          "distance": "11.76",
-          "date": "2026-02-06"
+          "distance": "12.44",
+          "date": "2026-02-13"
         },
         "fastestPace": {
           "pace": "7:19",
@@ -755,21 +794,21 @@
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 2,
-        "weekday": 17
+        "weekday": 18
       },
       "seasonalBreakdown": {
         "Winter": {
-          "count": 19,
-          "avgDistance": "5.30"
+          "count": 20,
+          "avgDistance": "5.66"
         }
       }
     },
     "summaries": {
       "monthly": {
         "2026-February": {
-          "runs": 4,
-          "distance": "26.68",
-          "time": "4.0"
+          "runs": 5,
+          "distance": "39.12",
+          "time": "5.7"
         },
         "2026-January": {
           "runs": 15,
@@ -780,9 +819,9 @@
       "weekly": [
         {
           "week": "2026-02-08",
-          "runs": 2,
-          "distance": "8.77",
-          "time": "1.3"
+          "runs": 3,
+          "distance": "21.21",
+          "time": "3.0"
         },
         {
           "week": "2026-02-01",
@@ -817,5 +856,5 @@
       ]
     }
   },
-  "processedAt": "2026-02-13T06:56:10.953Z"
+  "processedAt": "2026-02-14T06:40:20.820Z"
 }

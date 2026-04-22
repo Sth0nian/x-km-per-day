@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2026-04-21T07:44:58.625Z",
+  "lastUpdated": "2026-04-22T07:28:18.361Z",
   "totalActivities": 32,
   "yearToDate": 2026,
   "dataRange": {
     "startDate": "2026-01-01",
-    "endDate": "2026-04-21",
-    "totalDays": 110
+    "endDate": "2026-04-22",
+    "totalDays": 111
   },
   "activities": [
     {
@@ -24,7 +24,7 @@
       "averageHeartrate": 168.3,
       "maxHeartrate": 174,
       "sufferScore": 104,
-      "kudosCount": 1,
+      "kudosCount": 2,
       "startLatLng": [
         52.200644,
         5.289727
@@ -1197,7 +1197,7 @@
     },
     "activitiesPerWeek": "2.2",
     "yearToDateStats": {
-      "totalDays": 110,
+      "totalDays": 111,
       "activeDays": 32,
       "averageDistancePerRun": "8.13",
       "totalRuns": 32,
@@ -1350,5 +1350,5 @@
       ]
     }
   },
-  "processedAt": "2026-04-21T07:44:58.693Z"
+  "processedAt": "2026-04-22T07:28:18.427Z"
 }

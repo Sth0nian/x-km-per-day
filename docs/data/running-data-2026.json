@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2026-06-20T08:50:30.134Z",
-  "totalActivities": 47,
+  "lastUpdated": "2026-06-21T09:44:21.772Z",
+  "totalActivities": 48,
   "yearToDate": 2026,
   "dataRange": {
     "startDate": "2026-01-01",
-    "endDate": "2026-06-20",
-    "totalDays": 170
+    "endDate": "2026-06-21",
+    "totalDays": 171
   },
   "activities": [
+    {
+      "id": 18995076994,
+      "date": "2026-06-20",
+      "distance": 12047.1,
+      "distanceMiles": "7.49",
+      "distanceKm": "12.05",
+      "movingTime": 5030,
+      "elapsedTime": 5119,
+      "totalElevationGain": 23.8,
+      "averageSpeed": 2.395,
+      "maxSpeed": 4.34,
+      "averagePaceMinMile": "11:11",
+      "averagePaceMinKm": "6:57",
+      "averageHeartrate": 134.4,
+      "maxHeartrate": 155,
+      "sufferScore": 66,
+      "kudosCount": 1,
+      "startLatLng": [
+        51.279798,
+        -2.656557
+      ],
+      "endLatLng": [
+        51.281681,
+        -2.769179
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": null,
+      "pacePerMile": 671.562082777036,
+      "elevationPerMile": 10.425099065420559,
+      "speedMph": 5.360636182902584,
+      "weekday": "Saturday",
+      "month": "June",
+      "year": 2026,
+      "quarterYear": 2,
+      "isWeekend": true,
+      "season": "Summer"
+    },
     {
       "id": 18941830831,
       "date": "2026-06-16",
@@ -1771,40 +1810,40 @@
     }
   ],
   "summary": {
-    "totalDistance": "366.66",
-    "totalTimeHours": "36.2",
-    "totalElevationGain": "1296",
-    "averageDistance": "7.80",
-    "averagePace": "5:52",
+    "totalDistance": "378.71",
+    "totalTimeHours": "37.6",
+    "totalElevationGain": "1320",
+    "averageDistance": "7.89",
+    "averagePace": "5:53",
     "dateRange": {
       "start": "2026-01-05",
-      "end": "2026-06-16"
+      "end": "2026-06-20"
     },
     "activitiesPerWeek": "2.0",
     "yearToDateStats": {
-      "totalDays": 170,
-      "activeDays": 47,
-      "averageDistancePerRun": "7.80",
-      "totalRuns": 47,
+      "totalDays": 171,
+      "activeDays": 48,
+      "averageDistancePerRun": "7.89",
+      "totalRuns": 48,
       "longestRun": "20.02"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 47,
-      "totalDistance": "227.86",
-      "totalTimeHours": "36.2",
-      "totalElevationFeet": "4251",
-      "averageDistance": "4.85",
-      "averageTimeMinutes": "46",
+      "totalRuns": 48,
+      "totalDistance": "235.35",
+      "totalTimeHours": "37.6",
+      "totalElevationFeet": "4329",
+      "averageDistance": "4.90",
+      "averageTimeMinutes": "47",
       "longestRun": "12.44",
       "shortestRun": "0.46"
     },
     "trends": {
       "distanceTrend": "improving",
       "paceTrend": "declining",
-      "recentAvgDistance": "6.24",
-      "recentAvgPace": "10:47",
+      "recentAvgDistance": "6.48",
+      "recentAvgPace": "10:42",
       "consistency": "High"
     },
     "performance": {
@@ -1828,13 +1867,13 @@
       "favoriteDay": "Tuesday",
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
-        "weekend": 6,
+        "weekend": 7,
         "weekday": 41
       },
       "seasonalBreakdown": {
         "Summer": {
-          "count": 8,
-          "avgDistance": "5.91"
+          "count": 9,
+          "avgDistance": "6.08"
         },
         "Spring": {
           "count": 16,
@@ -1849,9 +1888,9 @@
     "summaries": {
       "monthly": {
         "2026-June": {
-          "runs": 8,
-          "distance": "47.27",
-          "time": "8.7"
+          "runs": 9,
+          "distance": "54.76",
+          "time": "10.1"
         },
         "2026-May": {
           "runs": 6,
@@ -1882,9 +1921,9 @@
       "weekly": [
         {
           "week": "2026-06-14",
-          "runs": 1,
-          "distance": "6.24",
-          "time": "1.2"
+          "runs": 2,
+          "distance": "13.73",
+          "time": "2.5"
         },
         {
           "week": "2026-06-07",
@@ -1955,5 +1994,5 @@
       ]
     }
   },
-  "processedAt": "2026-06-20T08:50:30.208Z"
+  "processedAt": "2026-06-21T09:44:21.849Z"
 }

@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2026-07-21T08:22:11.197Z",
+  "lastUpdated": "2026-07-22T08:22:37.944Z",
   "totalActivities": 48,
   "yearToDate": 2026,
   "dataRange": {
     "startDate": "2026-01-01",
-    "endDate": "2026-07-21",
-    "totalDays": 201
+    "endDate": "2026-07-22",
+    "totalDays": 202
   },
   "activities": [
     {
@@ -1821,7 +1821,7 @@
     },
     "activitiesPerWeek": "2.0",
     "yearToDateStats": {
-      "totalDays": 201,
+      "totalDays": 202,
       "activeDays": 48,
       "averageDistancePerRun": "7.89",
       "totalRuns": 48,
@@ -1994,5 +1994,5 @@
       ]
     }
   },
-  "processedAt": "2026-07-21T08:22:11.277Z"
+  "processedAt": "2026-07-22T08:22:38.006Z"
 }

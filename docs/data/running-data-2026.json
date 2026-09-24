@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2026-09-23T10:43:13.941Z",
+  "lastUpdated": "2026-09-24T11:03:52.085Z",
   "totalActivities": 69,
   "yearToDate": 2026,
   "dataRange": {
     "startDate": "2026-01-01",
-    "endDate": "2026-09-23",
-    "totalDays": 265
+    "endDate": "2026-09-24",
+    "totalDays": 266
   },
   "activities": [
     {
@@ -21,7 +21,7 @@
       "maxSpeed": 3.52,
       "averagePaceMinMile": "10:58",
       "averagePaceMinKm": "6:48",
-      "kudosCount": 0,
+      "kudosCount": 1,
       "startLatLng": [
         52.211323,
         5.157422
@@ -2625,7 +2625,7 @@
     },
     "activitiesPerWeek": "1.9",
     "yearToDateStats": {
-      "totalDays": 265,
+      "totalDays": 266,
       "activeDays": 69,
       "averageDistancePerRun": "7.03",
       "totalRuns": 69,
@@ -2812,5 +2812,5 @@
       ]
     }
   },
-  "processedAt": "2026-09-23T10:43:14.027Z"
+  "processedAt": "2026-09-24T11:03:52.212Z"
 }

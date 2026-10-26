@@ -256,7 +256,7 @@ class ActivityAdder {
         const totalTime = activities.reduce((sum, a) => sum + a.movingTime, 0);
         const totalElevation = activities.reduce((sum, a) => sum + a.totalElevationGain, 0);
         const averageDistance = totalDistance / activities.length;
-        const averagePaceSeconds = totalTime / activities.length / parseFloat(activities[0].distanceKm);
+        const averagePaceSeconds = totalDistance > 0 ? totalTime / totalDistance : 0;
         const averagePaceMinutes = Math.floor(averagePaceSeconds / 60);
         const averagePaceSecRem = Math.round(averagePaceSeconds % 60);
 

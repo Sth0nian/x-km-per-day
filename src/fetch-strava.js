@@ -264,8 +264,9 @@ class StravaDataFetcher {
         const totalElevation = activities.reduce((sum, act) => sum + (act.totalElevationGain || 0), 0);
         
         const avgDistanceKm = totalDistanceKm / activities.length;
+        // Overall pace = total time / total distance (averaging per-run speeds skews it)
         const avgPaceKm = this.convertSpeedToPace(
-            activities.reduce((sum, act) => sum + act.averageSpeed, 0) / activities.length,
+            totalTime > 0 ? (totalDistanceKm * 1000) / totalTime : 0,
             'km'
         );
 

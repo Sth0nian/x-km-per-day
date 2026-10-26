@@ -12,15 +12,11 @@ body {
     color: #ffffff;
 }
 
-/* Space around the shared sth0nian.github.io header, matching the other sections */
-.site-chrome {
-    padding: 40px 40px 0;
-}
-
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    padding-top: 36px;
 }
 
 /* Header */
@@ -306,10 +302,6 @@ header h1 {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .site-chrome {
-        padding: 30px 30px 0;
-    }
-
     .container {
         padding: 10px;
     }

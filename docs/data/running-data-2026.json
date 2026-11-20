@@ -1,13 +1,82 @@
 {
-  "lastUpdated": "2026-11-19T15:11:32.569Z",
-  "totalActivities": 82,
+  "lastUpdated": "2026-11-20T14:51:03.137Z",
+  "totalActivities": 84,
   "yearToDate": 2026,
   "dataRange": {
     "startDate": "2026-01-01",
-    "endDate": "2026-11-19",
-    "totalDays": 322
+    "endDate": "2026-11-20",
+    "totalDays": 323
   },
   "activities": [
+    {
+      "id": 21057263298,
+      "date": "2026-11-20",
+      "distance": 7049.8,
+      "distanceMiles": "4.38",
+      "distanceKm": "7.05",
+      "movingTime": 2834,
+      "elapsedTime": 2834,
+      "totalElevationGain": 37.2,
+      "averageSpeed": 2.488,
+      "maxSpeed": 3.5,
+      "averagePaceMinMile": "10:46",
+      "averagePaceMinKm": "6:41",
+      "averageHeartrate": 152.2,
+      "maxHeartrate": 161,
+      "sufferScore": 95,
+      "kudosCount": 0,
+      "startLatLng": [
+        52.211358,
+        5.157296
+      ],
+      "endLatLng": [
+        52.211152,
+        5.157732
+      ],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g25617759",
+      "pacePerMile": 647.0319634703196,
+      "elevationPerMile": 27.86466849315069,
+      "speedMph": 5.563867325335215,
+      "weekday": "Friday",
+      "month": "November",
+      "year": 2026,
+      "quarterYear": 4,
+      "isWeekend": false,
+      "season": "Fall"
+    },
+    {
+      "id": 21051363592,
+      "date": "2026-11-19",
+      "distance": 5005,
+      "distanceMiles": "3.11",
+      "distanceKm": "5.00",
+      "movingTime": 1499,
+      "elapsedTime": 1499,
+      "totalElevationGain": 0,
+      "averageSpeed": 3.339,
+      "maxSpeed": 4,
+      "averagePaceMinMile": "8:01",
+      "averagePaceMinKm": "4:59",
+      "kudosCount": 0,
+      "startLatLng": [],
+      "endLatLng": [],
+      "city": null,
+      "state": null,
+      "country": null,
+      "gear": "g25617759",
+      "pacePerMile": 481.9935691318328,
+      "elevationPerMile": 0,
+      "speedMph": 7.4689793195463645,
+      "weekday": "Thursday",
+      "month": "November",
+      "year": 2026,
+      "quarterYear": 4,
+      "isWeekend": false,
+      "season": "Fall"
+    },
     {
       "id": 21031236576,
       "date": "2026-11-18",
@@ -3103,31 +3172,31 @@
     }
   ],
   "summary": {
-    "totalDistance": "549.67",
-    "totalTimeHours": "55.7",
-    "totalElevationGain": "1920",
-    "averageDistance": "6.70",
+    "totalDistance": "561.72",
+    "totalTimeHours": "56.9",
+    "totalElevationGain": "1957",
+    "averageDistance": "6.69",
     "averagePace": "6:04",
     "dateRange": {
       "start": "2026-01-05",
-      "end": "2026-11-18"
+      "end": "2026-11-20"
     },
     "activitiesPerWeek": "1.8",
     "yearToDateStats": {
-      "totalDays": 322,
-      "activeDays": 82,
-      "averageDistancePerRun": "6.70",
-      "totalRuns": 82,
+      "totalDays": 323,
+      "activeDays": 84,
+      "averageDistancePerRun": "6.69",
+      "totalRuns": 84,
       "longestRun": "20.02"
     }
   },
   "analytics": {
     "totalStats": {
-      "totalRuns": 82,
-      "totalDistance": "341.57",
-      "totalTimeHours": "55.7",
-      "totalElevationFeet": "6299",
-      "averageDistance": "4.17",
+      "totalRuns": 84,
+      "totalDistance": "349.06",
+      "totalTimeHours": "56.9",
+      "totalElevationFeet": "6421",
+      "averageDistance": "4.16",
       "averageTimeMinutes": "41",
       "longestRun": "12.44",
       "shortestRun": "0.06"
@@ -3135,15 +3204,15 @@
     "trends": {
       "distanceTrend": "declining",
       "paceTrend": "declining",
-      "recentAvgDistance": "2.98",
-      "recentAvgPace": "9:20",
+      "recentAvgDistance": "3.23",
+      "recentAvgPace": "9:25",
       "consistency": "High"
     },
     "performance": {
       "bestPace": "7:19",
       "worstPace": "13:14",
       "paceVariability": "96 sec",
-      "distanceVariability": "2.20 mi",
+      "distanceVariability": "2.18 mi",
       "personalRecords": {
         "longestRun": {
           "distance": "12.44",
@@ -3161,12 +3230,12 @@
       "favoriteTime": "Privacy Protected",
       "weekendVsWeekday": {
         "weekend": 12,
-        "weekday": 70
+        "weekday": 72
       },
       "seasonalBreakdown": {
         "Fall": {
-          "count": 21,
-          "avgDistance": "3.14"
+          "count": 23,
+          "avgDistance": "3.20"
         },
         "Summer": {
           "count": 22,
@@ -3185,9 +3254,9 @@
     "summaries": {
       "monthly": {
         "2026-November": {
-          "runs": 9,
-          "distance": "27.39",
-          "time": "4.3"
+          "runs": 11,
+          "distance": "34.88",
+          "time": "5.5"
         },
         "2026-October": {
           "runs": 4,
@@ -3238,9 +3307,9 @@
       "weekly": [
         {
           "week": "2026-11-15",
-          "runs": 3,
-          "distance": "8.65",
-          "time": "1.4"
+          "runs": 5,
+          "distance": "16.14",
+          "time": "2.6"
         },
         {
           "week": "2026-11-08",
@@ -3311,5 +3380,5 @@
       ]
     }
   },
-  "processedAt": "2026-11-19T15:11:32.639Z"
+  "processedAt": "2026-11-20T14:51:03.202Z"
 }
